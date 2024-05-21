@@ -1,0 +1,5 @@
+{
+    "transport": "Zenoh",
+    "version": 3,
+    "params": { "x": 1, "y": 2, "z": 3 }
+}
