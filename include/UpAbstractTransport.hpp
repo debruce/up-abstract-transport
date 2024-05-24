@@ -48,7 +48,7 @@ namespace UpAbstractTransport {
     class Publisher {
         std::shared_ptr<PublisherApi> pImpl;
         public:
-        Publisher(Transport transport, const std::string& topic);
+        Publisher(Transport, const std::string&);
         void operator()(const Message& message) { (*pImpl)(message); }
     };
 
@@ -60,24 +60,24 @@ namespace UpAbstractTransport {
     class Subscriber {
         std::shared_ptr<SubscriberApi> pImpl;
     public:
-        Subscriber(Transport transport, const std::string& topic, SubscriberCallback callback);
+        Subscriber(Transport, const std::string&, SubscriberCallback);
     };
 
 
     struct RpcClientApi {
-        typedef std::shared_ptr<RpcClientApi> (*Getter)(Transport, const std::string&, const Message&, const std::chrono::seconds&);
+        typedef std::shared_ptr<RpcClientApi> (*Getter)(Transport, const std::string&, const Message&, const std::chrono::milliseconds&);
         virtual RpcReply operator()() = 0;
     };
 
     class RpcClient {
         std::shared_ptr<RpcClientApi> pImpl;
     public:
-        RpcClient(Transport transport, const std::string& topic, const Message& message, const std::chrono::seconds& timeout);
+        RpcClient(Transport, const std::string&, const Message&, const std::chrono::milliseconds&);
 
         RpcReply operator()() { return (*pImpl)(); }
     };
 
-    std::future<RpcReply> queryCall(Transport transport, std::string expr, const Message& message, const std::chrono::seconds& timeout);
+    std::future<RpcReply> queryCall(Transport, const std::string&, const Message&, const std::chrono::milliseconds&);
 
 
     struct RpcServerApi {
@@ -87,7 +87,7 @@ namespace UpAbstractTransport {
     class RpcServer {
         std::shared_ptr<RpcServerApi> pImpl;
     public:
-        RpcServer(Transport transport, const std::string& topic, RpcServerCallback callback);
+        RpcServer(Transport, const std::string&, RpcServerCallback);
     };
 
 };

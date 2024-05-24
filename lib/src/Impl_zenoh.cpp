@@ -1,6 +1,5 @@
 #include "UpAbstractTransport.hpp"
 #include "Impl_zenoh.hpp"
-#include <iostream>
 
 namespace Impl_zenoh {
 
@@ -15,12 +14,10 @@ static zenohc::Session inst()
 
 TransportImpl::TransportImpl(const nlohmann::json& doc) : session(inst())
 {
-    cout << __PRETTY_FUNCTION__ << " doc=" << doc << endl; 
 }
 
 TransportImpl::~TransportImpl()
 {
-    cout << __PRETTY_FUNCTION__ << endl; 
 }
 
 any transport_getter(const nlohmann::json& doc)

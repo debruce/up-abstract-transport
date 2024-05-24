@@ -1,6 +1,5 @@
 #include "UpAbstractTransport.hpp"
 #include "Impl_zenoh.hpp"
-#include <iostream>
 #include <mutex>
 #include <condition_variable>
 #include <deque>
@@ -66,7 +65,6 @@ struct SubscriberImpl : public SubscriberApi {
     SubscriberImpl(Transport transport, const std::string& topic, SubscriberCallback _callback)
      : expr(topic)
     {
-        cout << __PRETTY_FUNCTION__ << " topic=" << topic << endl;
         trans_impl = any_cast<shared_ptr<TransportImpl>>(transport.pImpl->impl);
         listening_topic = topic;
         callback = _callback;

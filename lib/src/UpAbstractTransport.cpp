@@ -1,7 +1,6 @@
 #include "UpAbstractTransport.hpp"
 #include <map>
 #include <any>
-#include <iostream>
 
 namespace UpAbstractTransport {
 
@@ -24,14 +23,14 @@ Subscriber::Subscriber(Transport transport, const string& topic, SubscriberCallb
 }
 
 
-RpcClient::RpcClient(Transport transport, const string& topic, const Message& message, const chrono::seconds& timeout)
+RpcClient::RpcClient(Transport transport, const string& topic, const Message& message, const chrono::milliseconds& timeout)
 {
    auto a = transport.get_factory("rpc_client");
    auto getter = any_cast<RpcClientApi::Getter>(a);
    pImpl = (*getter)(transport, topic, message, timeout);       
 }
 
-future<RpcReply> queryCall(Transport transport, const string& topic, const Message& message, const chrono::seconds& timeout)
+future<RpcReply> queryCall(Transport transport, const string& topic, const Message& message, const chrono::milliseconds& timeout)
 {
     auto topicCopy = make_shared<string>(topic);
     auto msg = make_shared<Message>(message);
@@ -53,7 +52,7 @@ namespace Impl_zenoh {
    any transport_getter(const nlohmann::json& doc);
    shared_ptr<PublisherApi> publisher_getter(Transport transport, const string& name);
    shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const string& topic, SubscriberCallback callback);
-   shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const string& topic, const Message& message, const chrono::seconds& timeout);
+   shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const string& topic, const Message& message, const chrono::milliseconds& timeout);
    shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const string& topic, RpcServerCallback callback);
 };
 
@@ -78,7 +77,6 @@ any Transport::get_factory(const string& name)
 
 Transport::Impl::Impl(const Doc& init_doc) {
     auto transport_style = init_doc["transport"].get<string>();
-    cout << "transport_style = " << transport_style << endl;
 
     if (transport_style == "zenoh") {
         impl = ::Impl_zenoh::transport_getter(init_doc);

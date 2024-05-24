@@ -1,6 +1,5 @@
 #include "UpAbstractTransport.hpp"
 #include "Impl_zenoh.hpp"
-#include <iostream>
 #include <mutex>
 #include <condition_variable>
 #include <deque>
@@ -21,8 +20,7 @@ static std::string keyexpr2string(const z_keyexpr_t& keyexpr)
 
 static string stringFromZBytes(const z_bytes_t& z)
 {
-    const char * ptr = (const char*)z.start;
-    return string(ptr, ptr + z.len);
+    return string((const char*)z.start, z.len);
 }
 
 static z_bytes_t zbytesFromOpaque(const string_view& od)
@@ -48,6 +46,7 @@ struct QInfoImpl {
         message.attributes = stringFromZBytes(avalue);
         owned_query = z_query_clone(query);
     }
+
 
     ~QInfoImpl()
     {
@@ -114,7 +113,6 @@ struct RpcServerImpl : public RpcServerApi {
 
     RpcServerImpl(Transport transport, const string& topic, RpcServerCallback _callback) : expr(topic)
     {
-        cout << __PRETTY_FUNCTION__ << " topic=" << topic << endl;
         trans_impl = any_cast<shared_ptr<TransportImpl>>(transport.pImpl->impl);
         listening_topic = topic;
         callback = _callback;

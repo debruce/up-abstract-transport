@@ -1,5 +1,6 @@
 #include "UpAbstractTransport.hpp"
 #include <iostream>
+#include <algorithm>
 #include <unistd.h>
 
 using namespace std;
@@ -20,8 +21,11 @@ R"(
             << " to=" << listening_topic
             << " payload=" << message.payload
             << " attributes=" << message.attributes << endl;
-        return Message{"from", "server"};
+        string upayload, uattributes;
+        for (auto c : message.payload) upayload += std::toupper(c);
+        for (auto c : message.attributes) uattributes += std::toupper(c);
+        return Message{upayload, uattributes};
     };
-    auto rpc_server = RpcServer(transport, "demo/rpc/action1", callback);
+    auto rpc_server = RpcServer(transport, "demo/rpc/*", callback);
     sleep(10000);
 }
