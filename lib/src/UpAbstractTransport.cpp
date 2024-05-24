@@ -16,7 +16,7 @@ Publisher::Publisher(Transport transport, const std::string& topic)
 }
 
 
-Subscriber::Subscriber(Transport transport, const std::string& topic, SubscriberServerCallback callback)
+Subscriber::Subscriber(Transport transport, const std::string& topic, SubscriberCallback callback)
 {
    auto a = transport.get_factory("subscriber");
    auto getter = any_cast<SubscriberApi::Getter>(a);
@@ -51,7 +51,7 @@ namespace Impl_zenoh {
    using namespace UpAbstractTransport;
    any transport_getter(const nlohmann::json& doc);
    std::shared_ptr<PublisherApi> publisher_getter(Transport transport, const std::string& name);
-   std::shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const std::string& topic, SubscriberServerCallback callback);
+   std::shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const std::string& topic, SubscriberCallback callback);
    std::shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const std::string& topic, const Message& message, const std::chrono::seconds& timeout);
    std::shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const std::string& topic, RpcServerCallback callback);
 };

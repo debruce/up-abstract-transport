@@ -32,7 +32,8 @@ namespace UpAbstractTransport {
         std::string payload;
         std::string attributes;
     };
-    using SubscriberServerCallback = std::function<void (const std::string& sending_topic, const std::string& listening_topic, const Message&)>;
+
+    using SubscriberCallback = std::function<void (const std::string& sending_topic, const std::string& listening_topic, const Message&)>;
     using RpcReply = Message;
     using RpcServerCallback = std::function<std::optional<RpcReply> (const std::string& sending_topic, const std::string& listening_topic, const Message&)>;
 
@@ -50,13 +51,13 @@ namespace UpAbstractTransport {
 
 
     struct SubscriberApi {
-        typedef std::shared_ptr<SubscriberApi> (*Getter)(Transport, const std::string&, SubscriberServerCallback);
+        typedef std::shared_ptr<SubscriberApi> (*Getter)(Transport, const std::string&, SubscriberCallback);
     };
 
     class Subscriber {
         std::shared_ptr<SubscriberApi> pImpl;
     public:
-        Subscriber(Transport transport, const std::string& topic, SubscriberServerCallback callback);
+        Subscriber(Transport transport, const std::string& topic, SubscriberCallback callback);
     };
 
 
