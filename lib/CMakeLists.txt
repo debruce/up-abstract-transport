@@ -21,7 +21,13 @@ find_package(zenohc REQUIRED)
 
 # find_package(GTest REQUIRED)
 
-add_library(UpAbstractTransport SHARED src/UpAbstractTransport.cpp src/Impl_zenoh.cpp)
+add_library(UpAbstractTransport SHARED src/UpAbstractTransport.cpp
+    src/Impl_zenoh.cpp
+    src/Impl_zenoh_publisher.cpp
+    src/Impl_zenoh_subscriber.cpp
+    src/Impl_zenoh_rpc_client.cpp
+    src/Impl_zenoh_rpc_server.cpp
+    )
 target_link_libraries(UpAbstractTransport PRIVATE nlohmann_json::nlohmann_json zenohc::lib)
 
 # target_link_libraries(PluginApi PRIVATE ${DL_LIBRARY} OpenSSL::Crypto)
