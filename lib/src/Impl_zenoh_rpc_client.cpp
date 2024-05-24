@@ -13,10 +13,10 @@ struct RpcClientImpl : public RpcClientApi {
         cout << __PRETTY_FUNCTION__ << " topic=" << topic << endl; 
     }
 
-    tuple<string, Message> operator()() override
+    RpcReply operator()() override
     {
         cout << __PRETTY_FUNCTION__ << endl;
-        return make_tuple(string("hello"), Message{});      
+        return Message{};      
     }
 };
 

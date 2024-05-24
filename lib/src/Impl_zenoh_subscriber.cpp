@@ -28,7 +28,6 @@ struct SInfoImpl {
 struct SubscriberImpl : public SubscriberApi {
     shared_ptr<TransportImpl> trans_impl;
     std::unique_ptr<zenohc::Subscriber> handle;
-    // zenohc::Session& session;
     string listening_topic;
     zenohc::KeyExprView expr;
     std::mutex  mtx;
@@ -60,9 +59,7 @@ struct SubscriberImpl : public SubscriberApi {
                 ptr = queue.back();
                 queue.pop_back();
             }
-            // info = ptr;
             callback(ptr->source, listening_topic, ptr->message);
-            // info.reset(ptr->source, listening_topic, );
         }
     }
 

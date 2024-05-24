@@ -8,7 +8,7 @@ namespace UpAbstractTransport {
 using namespace std;
 
 
-Publisher::Publisher(Transport transport, const std::string& topic)
+Publisher::Publisher(Transport transport, const string& topic)
 {
    auto a = transport.get_factory("publisher");
    auto getter = any_cast<PublisherApi::Getter>(a);
@@ -16,7 +16,7 @@ Publisher::Publisher(Transport transport, const std::string& topic)
 }
 
 
-Subscriber::Subscriber(Transport transport, const std::string& topic, SubscriberCallback callback)
+Subscriber::Subscriber(Transport transport, const string& topic, SubscriberCallback callback)
 {
    auto a = transport.get_factory("subscriber");
    auto getter = any_cast<SubscriberApi::Getter>(a);
@@ -24,21 +24,22 @@ Subscriber::Subscriber(Transport transport, const std::string& topic, Subscriber
 }
 
 
-RpcClient::RpcClient(Transport transport, const std::string& topic, const Message& message, const std::chrono::seconds& timeout)
+RpcClient::RpcClient(Transport transport, const string& topic, const Message& message, const chrono::seconds& timeout)
 {
    auto a = transport.get_factory("rpc_client");
    auto getter = any_cast<RpcClientApi::Getter>(a);
    pImpl = (*getter)(transport, topic, message, timeout);       
 }
 
-future<tuple<string, Message>> queryCall(Transport transport, string expr, const Message& message, const chrono::seconds& timeout)
+future<RpcReply> queryCall(Transport transport, const string& topic, const Message& message, const chrono::seconds& timeout)
 {
+    auto topicCopy = make_shared<string>(topic);
     auto msg = make_shared<Message>(message);
-    return async([=]() { return RpcClient(transport, expr, *msg, timeout)(); } );
+    return async([=]() { return RpcClient(transport, *topicCopy, *msg, timeout)(); } );
 }
 
 
-RpcServer::RpcServer(Transport transport, const std::string& topic, RpcServerCallback callback)
+RpcServer::RpcServer(Transport transport, const string& topic, RpcServerCallback callback)
 {
    auto a = transport.get_factory("rpc_server");
    auto getter = any_cast<RpcServerApi::Getter>(a);
@@ -50,10 +51,10 @@ RpcServer::RpcServer(Transport transport, const std::string& topic, RpcServerCal
 namespace Impl_zenoh {
    using namespace UpAbstractTransport;
    any transport_getter(const nlohmann::json& doc);
-   std::shared_ptr<PublisherApi> publisher_getter(Transport transport, const std::string& name);
-   std::shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const std::string& topic, SubscriberCallback callback);
-   std::shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const std::string& topic, const Message& message, const std::chrono::seconds& timeout);
-   std::shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const std::string& topic, RpcServerCallback callback);
+   shared_ptr<PublisherApi> publisher_getter(Transport transport, const string& name);
+   shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const string& topic, SubscriberCallback callback);
+   shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const string& topic, const Message& message, const chrono::seconds& timeout);
+   shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const string& topic, RpcServerCallback callback);
 };
 
 namespace UpAbstractTransport {

@@ -33,9 +33,12 @@ namespace UpAbstractTransport {
         std::string attributes;
     };
 
-    using SubscriberCallback = std::function<void (const std::string& sending_topic, const std::string& listening_topic, const Message&)>;
-    using RpcReply = Message;
-    using RpcServerCallback = std::function<std::optional<RpcReply> (const std::string& sending_topic, const std::string& listening_topic, const Message&)>;
+    using SubscriberCallback = std::function<
+        void (const std::string& sending_topic, const std::string& listening_topic, const Message&)>;
+    
+    using RpcReply = std::optional<Message>;
+    using RpcServerCallback = std::function<
+        RpcReply (const std::string& sending_topic, const std::string& listening_topic, const Message&)>;
 
     struct PublisherApi {
         typedef std::shared_ptr<PublisherApi> (*Getter)(Transport, const std::string&);
@@ -63,7 +66,7 @@ namespace UpAbstractTransport {
 
     struct RpcClientApi {
         typedef std::shared_ptr<RpcClientApi> (*Getter)(Transport, const std::string&, const Message&, const std::chrono::seconds&);
-        virtual std::tuple<std::string, Message> operator()() = 0;
+        virtual RpcReply operator()() = 0;
     };
 
     class RpcClient {
@@ -71,10 +74,10 @@ namespace UpAbstractTransport {
     public:
         RpcClient(Transport transport, const std::string& topic, const Message& message, const std::chrono::seconds& timeout);
 
-        std::tuple<std::string, Message> operator()() { return (*pImpl)(); }
+        RpcReply operator()() { return (*pImpl)(); }
     };
 
-    std::future<std::tuple<std::string, Message>> queryCall(Transport transport, std::string expr, const Message& message, const std::chrono::seconds& timeout);
+    std::future<RpcReply> queryCall(Transport transport, std::string expr, const Message& message, const std::chrono::seconds& timeout);
 
 
     struct RpcServerApi {
