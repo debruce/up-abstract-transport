@@ -39,8 +39,9 @@ class UpClientZenoh(ConanFile):
 
     def requirements(self):
         self.requires("protobuf/3.21.12")
-        self.requires("up-cpp/0.2.0")
+        # self.requires("up-cpp/0.2.0")
         self.requires("nlohmann_json/3.11.3")
+        self.requires("boost/1.84.0")
 
     def generate(self):
         tc = CMakeToolchain(self)
