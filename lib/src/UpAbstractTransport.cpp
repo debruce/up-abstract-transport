@@ -1,8 +1,10 @@
 #include "UpAbstractTransport.hpp"
-#include "DllHandle.hpp"
+#include "FactoryPlugin.hpp"
 #include <map>
 #include <any>
+#include <filesystem>
 #include <iostream>
+#include <wordexp.h>
 
 namespace UpAbstractTransport {
 
@@ -49,55 +51,45 @@ RpcServer::RpcServer(Transport transport, const string& topic, RpcServerCallback
 
 }; // UpAbstractTransport
 
-// namespace Impl_zenoh {
-//    using namespace UpAbstractTransport;
-//    any transport_getter(const nlohmann::json& doc);
-//    shared_ptr<PublisherApi> publisher_getter(Transport transport, const string& name);
-//    shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const string& topic, SubscriberCallback callback);
-//    shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const string& topic, const Message& message, const chrono::milliseconds& timeout);
-//    shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const string& topic, RpcServerCallback callback);
-// };
-
 namespace UpAbstractTransport {
 
 using namespace std;
 
+string resolve_path(const string& impl)
+{
+    wordexp_t   we;
+    auto retval = wordexp(impl.c_str(), &we, WRDE_UNDEF);
+    if (retval != 0) {
+        wordfree(&we);
+        throw runtime_error("wordexp expansion failed");
+    }
+    if (we.we_wordc != 1) {
+        wordfree(&we);
+        throw runtime_error("wordexp expanded to more than one path");
+    }
+    string result(we.we_wordv[0]);
+    wordfree(&we);
+    return result;
+}
+
 Transport::Transport(const Doc& init_doc)
-    : pImpl(new Impl(init_doc))
 {
-}
-
-Transport::Transport(const char* init_string)
-    : pImpl(new Impl(Doc::parse(init_string)))
-{
-}
-
-any Transport::get_factory(const string& name)
-{
-    return pImpl->get_factory(name);
-}
-
-Transport::Impl::Impl(const Doc& init_doc) {
     auto transport_style = init_doc["transport"].get<string>();
 
     if (transport_style == "zenoh") {
-        cout << "is zenoh" << endl;
-        // impl = ::Impl_zenoh::transport_getter(init_doc);
-        // getters["publisher"] = ::Impl_zenoh::publisher_getter;
-        // getters["subscriber"] = ::Impl_zenoh::subscriber_getter;
-        // getters["rpc_client"] = ::Impl_zenoh::rpc_client_getter;
-        // getters["rpc_server"] = ::Impl_zenoh::rpc_server_getter;
+        auto realpath = resolve_path(init_doc["implementation"].get<string>());
+        auto plugin = FactoryPlugin<Factories>(realpath);
+        pImpl = plugin->get_transport_impl(init_doc);
     }
     else throw runtime_error("Unsupported transport");
 }
 
-Transport::Impl::~Impl() {
-    cout << "unload" << endl;
-}
+Transport::Transport(const char* init_string) : Transport(Doc::parse(init_string))
+{}
 
-any Transport::Impl::get_factory(const string& name)
+any Transport::get_factory(const string& name)
 {
-    return getters[name];
+    return pImpl->get_factory(name);
 }
 
 }; // namespace UpAbstractTransport

@@ -5,14 +5,16 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-int main(int argc, char* argv[])
-{
-    auto init_doc =
+auto init_doc =
 R"(
 {
-    "transport": "zenoh"
+    "transport": "zenoh",
+    "implementation": "${IMPL_ZENOH}"
 }
 )";
+
+int main(int argc, char* argv[])
+{
     auto transport = Transport(init_doc);
     auto callback = [](const string& sending_topic, const string& listening_topic, const Message& message) {
         cout << "subscriber callback with"

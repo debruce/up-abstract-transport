@@ -113,7 +113,7 @@ struct RpcServerImpl : public RpcServerApi {
 
     RpcServerImpl(Transport transport, const string& topic, RpcServerCallback _callback) : expr(topic)
     {
-        trans_impl = any_cast<shared_ptr<TransportImpl>>(transport.pImpl->impl);
+        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
         listening_topic = topic;
         callback = _callback;
 

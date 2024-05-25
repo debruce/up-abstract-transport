@@ -65,7 +65,7 @@ struct SubscriberImpl : public SubscriberApi {
     SubscriberImpl(Transport transport, const std::string& topic, SubscriberCallback _callback)
      : expr(topic)
     {
-        trans_impl = any_cast<shared_ptr<TransportImpl>>(transport.pImpl->impl);
+        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
         listening_topic = topic;
         callback = _callback;
         handle = std::make_unique<zenohc::Subscriber>(

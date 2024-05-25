@@ -5,6 +5,14 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
+auto init_doc =
+R"(
+{
+    "transport": "zenoh",
+    "implementation": "${IMPL_ZENOH}"
+}
+)";
+
 template <class... Args>
 string genString(const char* fmt, Args... args)
 {
@@ -15,12 +23,6 @@ string genString(const char* fmt, Args... args)
 
 int main(int argc, char* argv[])
 {
-    auto init_doc =
-R"(
-{
-    "transport": "zenoh"
-}
-)";
     auto transport = Transport(init_doc);
 
     for (auto i = 0; i < 5; i++) {

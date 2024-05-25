@@ -5,30 +5,25 @@
 #include <string>
 #include <chrono>
 #include <optional>
+#include <functional>
 #include <future>
 #include <nlohmann/json.hpp>
 
 namespace UpAbstractTransport {
     using Doc = nlohmann::json;
 
+    struct TransportApi {
+        virtual std::any get_factory(const std::string&) = 0;
+    };
+
     struct Transport {
         Transport(const Doc& init_doc);
         Transport(const char* init_string);
         std::any get_factory(const std::string&);
 
-        struct Impl;
-        std::shared_ptr<Impl>   pImpl;
+        std::shared_ptr<TransportApi>   pImpl;
     };
 
-    struct Transport::Impl {
-        std::any    impl;
-        std::map<std::string, std::any> getters;
-
-        Impl(const Doc& init_doc);
-        ~Impl();
-        std::any get_factory(const std::string& name);
-
-    };
     struct Message {
         std::string payload;
         std::string attributes;
@@ -91,5 +86,7 @@ namespace UpAbstractTransport {
         RpcServer(Transport, const std::string&, RpcServerCallback);
     };
 
+    struct Factories {
+        std::function<std::shared_ptr<TransportApi> (const Doc& init_doc)> get_transport_impl;
+    };
 };
-

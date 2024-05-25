@@ -8,7 +8,8 @@ using namespace UpAbstractTransport;
 auto init_doc =
 R"(
 {
-    "transport": "zenoh"
+    "transport": "zenoh",
+    "implementation": "${IMPL_ZENOH}"
 }
 )";
 

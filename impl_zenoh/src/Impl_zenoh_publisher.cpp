@@ -18,7 +18,7 @@ struct PublisherImpl : public PublisherApi {
 
     PublisherImpl(Transport transport, const std::string& expr)
     {
-        trans_impl = any_cast<shared_ptr<TransportImpl>>(transport.pImpl->impl);
+        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
         handle = z_declare_publisher(trans_impl->session.loan(), z_keyexpr(expr.c_str()), nullptr);
         if (!z_check(handle)) throw std::runtime_error("Cannot declare publisher");
     }
