@@ -12,12 +12,14 @@ static zenohc::Session inst()
     return zenohc::expect<zenohc::Session>(zenohc::open(std::move(config)));
 }
 
-TransportImpl::TransportImpl(const nlohmann::json& doc) : session(inst())
+TransportImpl::TransportImpl(const nlohmann::json& doc) : TraceBase("TrImpl"), session(inst())
 {
+    TRACE(this, "");
 }
 
 TransportImpl::~TransportImpl()
 {
+    TRACE(this, "");
 }
 
 any transport_getter(const nlohmann::json& doc)
