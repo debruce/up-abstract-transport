@@ -25,6 +25,7 @@ namespace UpAbstractTransport {
         std::map<std::string, std::any> getters;
 
         Impl(const Doc& init_doc);
+        ~Impl();
         std::any get_factory(const std::string& name);
 
     };

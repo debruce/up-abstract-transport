@@ -19,6 +19,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 # find_package(GTest REQUIRED)
 
+add_executable(load_test src/load_test.cpp)
+target_link_libraries(load_test PUBLIC UpAbstractTransport PRIVATE nlohmann_json::nlohmann_json)
+
 add_executable(pub_test src/pub_test.cpp)
 target_link_libraries(pub_test PUBLIC UpAbstractTransport PRIVATE nlohmann_json::nlohmann_json)
 

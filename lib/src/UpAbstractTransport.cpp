@@ -1,6 +1,8 @@
 #include "UpAbstractTransport.hpp"
+#include "DllHandle.hpp"
 #include <map>
 #include <any>
+#include <iostream>
 
 namespace UpAbstractTransport {
 
@@ -47,14 +49,14 @@ RpcServer::RpcServer(Transport transport, const string& topic, RpcServerCallback
 
 }; // UpAbstractTransport
 
-namespace Impl_zenoh {
-   using namespace UpAbstractTransport;
-   any transport_getter(const nlohmann::json& doc);
-   shared_ptr<PublisherApi> publisher_getter(Transport transport, const string& name);
-   shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const string& topic, SubscriberCallback callback);
-   shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const string& topic, const Message& message, const chrono::milliseconds& timeout);
-   shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const string& topic, RpcServerCallback callback);
-};
+// namespace Impl_zenoh {
+//    using namespace UpAbstractTransport;
+//    any transport_getter(const nlohmann::json& doc);
+//    shared_ptr<PublisherApi> publisher_getter(Transport transport, const string& name);
+//    shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const string& topic, SubscriberCallback callback);
+//    shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const string& topic, const Message& message, const chrono::milliseconds& timeout);
+//    shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const string& topic, RpcServerCallback callback);
+// };
 
 namespace UpAbstractTransport {
 
@@ -79,13 +81,18 @@ Transport::Impl::Impl(const Doc& init_doc) {
     auto transport_style = init_doc["transport"].get<string>();
 
     if (transport_style == "zenoh") {
-        impl = ::Impl_zenoh::transport_getter(init_doc);
-        getters["publisher"] = ::Impl_zenoh::publisher_getter;
-        getters["subscriber"] = ::Impl_zenoh::subscriber_getter;
-        getters["rpc_client"] = ::Impl_zenoh::rpc_client_getter;
-        getters["rpc_server"] = ::Impl_zenoh::rpc_server_getter;
+        cout << "is zenoh" << endl;
+        // impl = ::Impl_zenoh::transport_getter(init_doc);
+        // getters["publisher"] = ::Impl_zenoh::publisher_getter;
+        // getters["subscriber"] = ::Impl_zenoh::subscriber_getter;
+        // getters["rpc_client"] = ::Impl_zenoh::rpc_client_getter;
+        // getters["rpc_server"] = ::Impl_zenoh::rpc_server_getter;
     }
     else throw runtime_error("Unsupported transport");
+}
+
+Transport::Impl::~Impl() {
+    cout << "unload" << endl;
 }
 
 any Transport::Impl::get_factory(const string& name)

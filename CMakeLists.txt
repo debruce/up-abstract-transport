@@ -13,21 +13,4 @@ include_directories(include)
 
 add_subdirectory(lib)
 add_subdirectory(test)
-
-# add_library(UpAbstractTransport SHARED src/UpAbstractTransport.cpp)
-# target_link_libraries(UpAbstractTransport PRIVATE nlohmann_json::nlohmann_json)
-
-# add_library(zenoh_wrap SHARED src/ZWrap.cpp src/QueryableServer.cpp src/QueryClient.cpp src/SubscriberServer.cpp src/PublishToSubscribers.cpp)
-# target_link_libraries(zenoh_wrap PRIVATE zenohc::lib)
-
-# add_executable(rpc_server test/rpc_server.cpp)
-# target_link_libraries(rpc_server PRIVATE zenohc::lib zenoh_wrap)
-
-# add_executable(rpc_client test/rpc_client.cpp)
-# target_link_libraries(rpc_client PRIVATE zenohc::lib zenoh_wrap)
-
-# add_executable(sub test/sub.cpp)
-# target_link_libraries(sub PRIVATE zenohc::lib zenoh_wrap)
-
-# add_executable(pub test/pub.cpp)
-# target_link_libraries(pub PRIVATE UpAbstractTransport nlohmann_json::nlohmann_json)
+add_subdirectory(impl_zenoh)

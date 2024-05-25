@@ -3,9 +3,8 @@ project(lib VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set( DL_LIBRARY /usr/lib/x86_64-linux-gnu/libdl.so.2 )
-find_package(OpenSSL REQUIRED)
-# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/zenohc-install/lib/cmake/")
+find_package(zenohc REQUIRED)
 
 # if(BUILD_UNBUNDLED)
 #     find_package(zenohc REQUIRED)
@@ -22,8 +21,17 @@ find_package(OpenSSL REQUIRED)
 
 # find_package(GTest REQUIRED)
 
-add_library(UpAbstractTransport SHARED src/UpAbstractTransport.cpp src/DllHandle.cpp)
-target_link_libraries(UpAbstractTransport PUBLIC nlohmann_json::nlohmann_json PRIVATE ${DL_LIBRARY} OpenSSL::Crypto)
+add_library(impl_zenoh SHARED
+    src/Impl_zenoh.cpp
+    src/Impl_zenoh_publisher.cpp
+    src/Impl_zenoh_subscriber.cpp
+    src/Impl_zenoh_rpc_client.cpp
+    src/Impl_zenoh_rpc_server.cpp
+    )
+target_link_libraries(impl_zenoh PRIVATE nlohmann_json::nlohmann_json zenohc::lib)
+set_target_properties(impl_zenoh PROPERTIES PREFIX "")
+# set_target_properties(impl_zenoh PROPERTIES PREFIX "")
+# set_target_properties(impl_zenoh PROPERTIES PREFIX "")
 
 # target_link_libraries(PluginApi PRIVATE ${DL_LIBRARY} OpenSSL::Crypto)
 
