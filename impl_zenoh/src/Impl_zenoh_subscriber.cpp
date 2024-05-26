@@ -1,16 +1,11 @@
 #include "UpAbstractTransport.hpp"
 #include "Impl_zenoh.hpp"
-#include <mutex>
-#include <condition_variable>
-#include <deque>
-#include <thread>
+#include "Utils.hpp"
 
 namespace Impl_zenoh {
 
 using namespace UpAbstractTransport;
 using namespace std;
-
-// thread_local std::shared_ptr<Subscriber::Info> Subscriber::info;
 
 struct SInfoImpl {
     string source;
@@ -28,21 +23,14 @@ struct SubscriberImpl : public SubscriberApi {
     shared_ptr<TransportImpl> trans_impl;
     std::unique_ptr<zenohc::Subscriber> handle;
     string listening_topic;
+    Fifo<SInfoImpl> fifo;
+    unique_ptr<ThreadPool> pool;
     zenohc::KeyExprView expr;
-    std::mutex  mtx;
-    std::condition_variable cv;
-    std::deque<std::shared_ptr<SInfoImpl>> queue;
-    bool die;
     SubscriberCallback callback;
-
-    std::vector<std::thread> thread_pool;
 
     void handler(const zenohc::Sample& sample)
     {
-        auto wq = std::make_shared<SInfoImpl>(sample);
-        std::unique_lock<std::mutex> lock(mtx);
-        queue.push_front(wq);
-        cv.notify_one();
+        fifo.push(make_shared<SInfoImpl>(sample));
     }
 
     void worker()
@@ -50,14 +38,8 @@ struct SubscriberImpl : public SubscriberApi {
         using namespace std;
 
         while (true) {
-            shared_ptr<SInfoImpl> ptr = nullptr;
-            {
-                unique_lock<mutex> lock(mtx);
-                cv.wait(lock, [&](){ return !queue.empty() && !die; });
-                if (die) break;
-                ptr = queue.back();
-                queue.pop_back();
-            }
+            auto ptr = fifo.pull();
+            if (ptr == nullptr) break;
             callback(ptr->source, listening_topic, ptr->message);
         }
     }
@@ -73,23 +55,13 @@ struct SubscriberImpl : public SubscriberApi {
                 trans_impl->session.declare_subscriber(
                     expr,
                     [&](const zenohc::Sample& arg) { this->handler(arg); } )));
-
-        die = false;
-        const size_t thread_count = 4;
-        thread_pool.reserve(thread_count);
-        for (size_t i = 0; i < 10; i++) {
-            thread_pool.emplace_back([&]() { worker(); });
-        }
+        pool = make_unique<ThreadPool>([&]() { worker(); }, 4);
     }
 
     ~SubscriberImpl()
     {
-        {
-            std::unique_lock<std::mutex> lock(mtx);
-            die = true;
-        }
-        for (auto& thr : thread_pool) thr.join();
-        thread_pool.clear();        
+        cout << __PRETTY_FUNCTION__ << " top" << endl;
+        fifo.exit();    
     }
 };
 

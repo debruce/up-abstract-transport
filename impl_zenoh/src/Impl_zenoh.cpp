@@ -40,7 +40,6 @@ any TransportImpl::get_factory(const std::string& name)
 
 std::shared_ptr<UpAbstractTransport::TransportApi> TransportImpl::get_instance(const nlohmann::json& doc)
 {
-    cout << "hello from get_instance" << endl;
     return make_shared<TransportImpl>(doc);
 }
 

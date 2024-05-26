@@ -1,9 +1,6 @@
 #include "UpAbstractTransport.hpp"
 #include "Impl_zenoh.hpp"
-#include <mutex>
-#include <condition_variable>
-#include <deque>
-#include <thread>
+#include "Utils.hpp"
 
 namespace Impl_zenoh {
 
@@ -69,13 +66,9 @@ struct RpcServerImpl : public RpcServerApi {
     z_owned_queryable_t qable;
     string listening_topic;
     zenohc::KeyExprView expr;
-    std::mutex  mtx;
-    std::condition_variable cv;
-    std::deque<std::shared_ptr<QInfoImpl>> queue;
-    bool die;
+    Fifo<QInfoImpl> fifo;
+    unique_ptr<ThreadPool> pool;
     RpcServerCallback callback;
-
-    std::vector<std::thread> thread_pool;
 
     static void _handler(const z_query_t *query, void *context)
     {
@@ -85,10 +78,7 @@ struct RpcServerImpl : public RpcServerApi {
 
     virtual void handler(const z_query_t *query)
     {
-        auto wq = std::make_shared<QInfoImpl>(query);
-        std::unique_lock<std::mutex> lock(mtx);
-        queue.push_front(wq);
-        cv.notify_one();
+        fifo.push(make_shared<QInfoImpl>(query));
     }
 
     void worker()
@@ -96,14 +86,8 @@ struct RpcServerImpl : public RpcServerApi {
         using namespace std;
 
         while (true) {
-            shared_ptr<QInfoImpl> ptr;
-            {
-                unique_lock<mutex> lock(mtx);
-                cv.wait(lock, [&](){ return !queue.empty() && !die; });
-                if (die) break;
-                ptr = queue.back();
-                queue.pop_back();
-            }
+            auto ptr = fifo.pull();
+            if (ptr == nullptr) break;
             auto result = callback(ptr->source, listening_topic, ptr->message);
             if (result) {
                 ptr->reply(*result, listening_topic);
@@ -120,24 +104,12 @@ struct RpcServerImpl : public RpcServerApi {
         z_owned_closure_query_t closure = z_closure(_handler, NULL, this);
         qable = z_declare_queryable(trans_impl->session.loan(), expr, z_move(closure), NULL);
         if (!z_check(qable)) throw std::runtime_error("Unable to create queryable.");
-
-        die = false;
-        const size_t thread_count = 4;
-        thread_pool.reserve(thread_count);
-        for (size_t i = 0; i < 10; i++) {
-            thread_pool.emplace_back([&]() { worker(); });
-        }
+        pool = make_unique<ThreadPool>([&]() { worker(); }, 4);
     }
 
     ~RpcServerImpl()
     {
-        {
-            std::unique_lock<std::mutex> lock(mtx);
-            die = true;
-        }
-        for (auto& thr : thread_pool) thr.join();
-        thread_pool.clear();
-
+        fifo.exit();
         z_undeclare_queryable(z_move(qable));        
     }
 };

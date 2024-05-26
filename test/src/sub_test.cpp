@@ -24,6 +24,6 @@ int main(int argc, char* argv[])
             << " attributes=" << message.attributes << endl;
     };
     auto subscriber = Subscriber(transport, "upl/*", callback);
-    sleep(10000);
+    sleep(10);
 }
 
