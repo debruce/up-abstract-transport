@@ -25,12 +25,12 @@ static z_bytes_t zbytesFromOpaque(const string_view& od)
     return z_bytes_t{.len = od.size(), .start = (uint8_t*)od.data()};
 }
 
-struct QInfoImpl {
+struct RpcRequestNode {
     string source;
     Message message;
     z_owned_query_t owned_query;
 
-    QInfoImpl(const z_query_t *query)
+    RpcRequestNode(const z_query_t *query)
     {
         source = keyexpr2string(z_query_keyexpr(query));
         z_bytes_t pred = z_query_parameters(query);
@@ -45,7 +45,7 @@ struct QInfoImpl {
     }
 
 
-    ~QInfoImpl()
+    ~RpcRequestNode()
     {
         z_query_drop(&owned_query);
     }
@@ -66,7 +66,7 @@ struct RpcServerImpl : public RpcServerApi {
     z_owned_queryable_t qable;
     string listening_topic;
     zenohc::KeyExprView expr;
-    Fifo<QInfoImpl> fifo;
+    Fifo<RpcRequestNode> fifo;
     unique_ptr<ThreadPool> pool;
     RpcServerCallback callback;
 
@@ -78,7 +78,7 @@ struct RpcServerImpl : public RpcServerApi {
 
     virtual void handler(const z_query_t *query)
     {
-        fifo.push(make_shared<QInfoImpl>(query));
+        fifo.push(make_shared<RpcRequestNode>(query));
     }
 
     void worker()
