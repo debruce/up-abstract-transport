@@ -6,21 +6,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/zenohc-install/lib/cmake/")
 find_package(zenohc REQUIRED)
 
-# if(BUILD_UNBUNDLED)
-#     find_package(zenohc REQUIRED)
-#     set(ZENOH_LIBRARY zenohc::lib)
-# else()
-#     if(CROSS_COMPILE)
-#         find_package(zenohc REQUIRED)
-# 	set(ZENOH_LIBRARY zenohc::lib)
-#     else()
-#         find_library(ZENOH_LIB zenohc)
-# 	set(ZENOH_LIBRARY ${ZENOH_LIB})
-#     endif()
-# endif()
-
-# find_package(GTest REQUIRED)
-
 add_library(impl_zenoh SHARED
     src/Impl_zenoh.cpp
     src/Impl_zenoh_publisher.cpp
@@ -33,5 +18,4 @@ set_target_properties(impl_zenoh PROPERTIES PREFIX "")
 # set_target_properties(impl_zenoh PROPERTIES PREFIX "")
 # set_target_properties(impl_zenoh PROPERTIES PREFIX "")
 
-# target_link_libraries(PluginApi PRIVATE ${DL_LIBRARY} OpenSSL::Crypto)
 
