@@ -21,7 +21,7 @@ struct SInfoImpl {
 
 struct SubscriberImpl : public SubscriberApi {
     shared_ptr<TransportImpl> trans_impl;
-    std::unique_ptr<zenohc::Subscriber> handle;
+    unique_ptr<zenohc::Subscriber> handle;
     string listening_topic;
     Fifo<SInfoImpl> fifo;
     unique_ptr<ThreadPool> pool;
@@ -50,7 +50,7 @@ struct SubscriberImpl : public SubscriberApi {
         trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
         listening_topic = topic;
         callback = _callback;
-        handle = std::make_unique<zenohc::Subscriber>(
+        handle = make_unique<zenohc::Subscriber>(
             zenohc::expect<zenohc::Subscriber>(
                 trans_impl->session.declare_subscriber(
                     expr,
@@ -60,7 +60,6 @@ struct SubscriberImpl : public SubscriberApi {
 
     ~SubscriberImpl()
     {
-        cout << __PRETTY_FUNCTION__ << " top" << endl;
         fifo.exit();    
     }
 };
