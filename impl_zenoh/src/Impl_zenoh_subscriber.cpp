@@ -64,7 +64,7 @@ struct SubscriberImpl : public SubscriberApi {
     }
 };
 
-std::shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const std::string& topic, SubscriberCallback callback)
+shared_ptr<SubscriberApi> subscriber_getter(Transport transport, const std::string& topic, SubscriberCallback callback)
 {
     return make_shared<SubscriberImpl>(transport, topic, callback);
 }
