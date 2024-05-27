@@ -1,5 +1,6 @@
 #include "UpAbstractTransport.hpp"
 #include "FactoryPlugin.hpp"
+#include "proto_files/myprotocol.pb.h"
 #include <iostream>
 
 using namespace UpAbstractTransport;
