@@ -40,7 +40,7 @@ namespace UpAbstractTransport
         pImpl = (*getter)(transport, topic, message, timeout);
     }
 
-    future<RpcReply> queryCall(Transport transport, const string &topic, const Message &message, const chrono::milliseconds &timeout)
+    future<RpcReply> rpcCall(Transport transport, const string &topic, const Message &message, const chrono::milliseconds &timeout)
     {
         auto topicCopy = make_shared<string>(topic);
         auto msg = make_shared<Message>(message);

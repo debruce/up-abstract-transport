@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     auto transport = Transport(init_doc);
 
     for (auto i = 0; i < 5; i++) {
-        auto f = queryCall(transport, "demo/rpc/action1", Message{genString("pay_A_%d", i), genString("attr_A_%d", i)}, chrono::seconds(2));
+        auto f = rpcCall(transport, "demo/rpc/action1", Message{genString("pay_A_%d", i), genString("attr_A_%d", i)}, chrono::seconds(2));
         auto result = f.get();
         cout << "got result payload=" << result->payload << " attributes=" << result->attributes <<  endl;
         usleep(100000);
