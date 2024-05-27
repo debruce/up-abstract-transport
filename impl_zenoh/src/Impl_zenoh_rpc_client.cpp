@@ -1,4 +1,4 @@
-#include "UpAbstractTransport.hpp"
+#include "HiddenTransport.hpp"
 #include "Impl_zenoh.hpp"
 
 namespace Impl_zenoh {
@@ -31,7 +31,7 @@ struct RpcClientImpl : public RpcClientApi {
 
     RpcClientImpl(Transport transport, const string& topic, const Message& message, const chrono::milliseconds& timeout)
     {
-        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
+        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl->conceptImpl);
 
         z_keyexpr_t keyexpr = z_keyexpr(topic.c_str());
         if (!z_check(keyexpr)) throw std::runtime_error("Not a valid key expression");

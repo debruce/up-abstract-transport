@@ -39,13 +39,13 @@ namespace Impl_zenoh
         return getters[name];
     }
 
-    std::shared_ptr<UpAbstractTransport::TransportApi> TransportImpl::get_instance(const nlohmann::json &doc)
+    std::shared_ptr<UpAbstractTransport::ConceptApi> TransportImpl::get_instance(const nlohmann::json &doc)
     {
         return make_shared<TransportImpl>(doc);
     }
 
 }; // Impl_zenoh
 
-UpAbstractTransport::Factories factories = {
+UpAbstractTransport::ConceptFactories factories = {
     Impl_zenoh::TransportImpl::get_instance};
 FACTORY_EXPOSE(factories);

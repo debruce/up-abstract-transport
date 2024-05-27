@@ -9,8 +9,7 @@
 
 namespace Impl_zenoh
 {
-
-    struct TransportImpl : public UpAbstractTransport::TransportApi, public TraceBase
+    struct TransportImpl : public UpAbstractTransport::ConceptApi, public TraceBase
     {
         zenohc::Session session;
         std::map<std::string, std::any> getters;
@@ -20,7 +19,7 @@ namespace Impl_zenoh
 
         std::any get_factory(const std::string &);
 
-        static std::shared_ptr<UpAbstractTransport::TransportApi> get_instance(const nlohmann::json &doc);
+        static std::shared_ptr<UpAbstractTransport::ConceptApi> get_instance(const nlohmann::json &doc);
     };
 
 }; // Impl_zenoh

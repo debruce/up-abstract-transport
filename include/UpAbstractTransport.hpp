@@ -13,34 +13,36 @@ namespace UpAbstractTransport
 {
     using Doc = nlohmann::json;
 
-    struct TransportApi
+    struct ConceptApi
     {
         virtual std::any get_factory(const std::string &) = 0;
     };
 
-    struct Transport
-    {
-        Transport(const Doc &init_doc);
-        Transport(const char *init_string);
-        std::any get_factory(const std::string &);
-
-        std::shared_ptr<TransportApi> pImpl;
-    };
-
     struct SerialApi
     {
-        typedef std::shared_ptr<SerialApi> (*Getter)(Transport, const std::string &);
-        virtual std::string hello(const std::string &) = 0;
+        virtual std::any get_factory(const std::string &) = 0;
     };
 
-    class Serial
+    struct HiddenTransport;
+
+    struct Transport
     {
-        std::shared_ptr<SerialApi> pImpl;
+        std::shared_ptr<HiddenTransport> pImpl;
 
-    public:
-        Serial(Transport, const std::string &);
-        std::string hello(const std::string &arg) { return pImpl->hello(arg); }
+        Transport(const Doc &init_doc);
+        Transport(const char *init_string);
+        std::any get_concept(const std::string &);
+        std::any get_serializer(const std::string &);
     };
+
+    // class Serial
+    // {
+    //     std::shared_ptr<SerialApi> pImpl;
+
+    // public:
+    //     Serial(Transport, const std::string &);
+    //     std::string hello(const std::string &arg) { return pImpl->hello(arg); }
+    // };
 
     struct Message
     {
@@ -114,13 +116,13 @@ namespace UpAbstractTransport
         RpcServer(Transport, const std::string &, RpcServerCallback);
     };
 
-    struct Factories
+    struct ConceptFactories
     {
-        std::function<std::shared_ptr<TransportApi>(const Doc &init_doc)> get_transport_impl;
+        std::function<std::shared_ptr<ConceptApi>(const Doc &init_doc)> get_impl;
     };
 
-    struct SerialFactories
+    struct SerializerFactories
     {
-        std::function<std::shared_ptr<SerialApi>()> get_serial_impl;
+        std::function<std::shared_ptr<SerialApi>()> get_impl;
     };
 };

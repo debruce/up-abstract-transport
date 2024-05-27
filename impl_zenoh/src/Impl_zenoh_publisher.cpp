@@ -1,4 +1,4 @@
-#include "UpAbstractTransport.hpp"
+#include "HiddenTransport.hpp"
 #include "Impl_zenoh.hpp"
 
 namespace Impl_zenoh {
@@ -18,7 +18,7 @@ struct PublisherImpl : public PublisherApi {
 
     PublisherImpl(Transport transport, const std::string& expr)
     {
-        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
+        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl->conceptImpl);
         handle = z_declare_publisher(trans_impl->session.loan(), z_keyexpr(expr.c_str()), nullptr);
         if (!z_check(handle)) throw std::runtime_error("Cannot declare publisher");
     }

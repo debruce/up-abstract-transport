@@ -1,4 +1,4 @@
-#include "UpAbstractTransport.hpp"
+#include "HiddenTransport.hpp"
 #include "Impl_zenoh.hpp"
 #include "Utils.hpp"
 
@@ -52,7 +52,7 @@ namespace Impl_zenoh
         SubscriberImpl(Transport transport, const std::string &topic, SubscriberCallback _callback)
             : expr(topic)
         {
-            trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
+            trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl->conceptImpl);
             listening_topic = topic;
             callback = _callback;
             handle = make_unique<zenohc::Subscriber>(

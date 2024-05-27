@@ -1,4 +1,4 @@
-#include "UpAbstractTransport.hpp"
+#include "HiddenTransport.hpp"
 #include "Impl_zenoh.hpp"
 #include "Utils.hpp"
 
@@ -97,7 +97,7 @@ struct RpcServerImpl : public RpcServerApi {
 
     RpcServerImpl(Transport transport, const string& topic, RpcServerCallback _callback) : expr(topic)
     {
-        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl);
+        trans_impl = dynamic_pointer_cast<TransportImpl>(transport.pImpl->conceptImpl);
         listening_topic = topic;
         callback = _callback;
 
