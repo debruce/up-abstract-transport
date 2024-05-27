@@ -9,7 +9,11 @@ find_package(OpenSSL REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../impl_include)
 
-add_library(UpAbstractTransport SHARED src/UpAbstractTransport.cpp src/DllHandle.cpp)
+add_library(UpAbstractTransport SHARED
+    src/TransportBase.cpp
+    src/Concepts.cpp
+    src/Serializer.cpp
+    src/DllHandle.cpp)
 target_link_libraries(UpAbstractTransport PUBLIC nlohmann_json::nlohmann_json PRIVATE ${DL_LIBRARY} OpenSSL::Crypto)
 
 # target_link_libraries(PluginApi PRIVATE ${DL_LIBRARY} OpenSSL::Crypto)
