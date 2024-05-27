@@ -16,7 +16,7 @@ R"(
 int main(int argc, char* argv[])
 {
     auto transport = Transport(init_doc);
-    auto obj = Serializer(transport, "hello");
+    auto obj = transport.get_serializer("hello");
     auto ret = obj.hello("arg to hello");
     cout << "ret = " << ret  << endl;
 }

@@ -9,6 +9,8 @@
 #include <future>
 #include <nlohmann/json.hpp>
 
+#include "Serializer.hpp"
+
 namespace UpAbstractTransport
 {
     using Doc = nlohmann::json;
@@ -19,7 +21,7 @@ namespace UpAbstractTransport
     };
 
     struct HiddenTransport;
-    struct SerializerApi;
+    struct Serializer;
 
     struct Transport
     {
@@ -28,7 +30,7 @@ namespace UpAbstractTransport
         Transport(const Doc &init_doc);
         Transport(const char *init_string);
         std::any get_concept(const std::string &);
-        std::shared_ptr<SerializerApi> get_serializer(const std::string &);
+        Serializer get_serializer(const std::string &);
     };
 
     struct ConceptFactories

@@ -53,9 +53,12 @@ namespace UpAbstractTransport
         return pImpl->conceptImpl->get_factory(name);
     }
 
-    shared_ptr<SerializerApi> Transport::get_serializer(const string &name)
+    Serializer Transport::get_serializer(const string &name)
     {
-        return pImpl->serialPlugin->get_instance(name);
+        Serializer ret;
+        
+        ret.pImpl = pImpl->serialPlugin->get_instance(name);
+        return ret;
     }
 
 }; // namespace UpAbstractTransport
