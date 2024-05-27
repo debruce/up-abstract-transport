@@ -7,21 +7,21 @@ namespace UpAbstractTransport
 
     Publisher::Publisher(Transport transport, const string &topic)
     {
-        auto a = transport.get_concept("publisher");
+        auto a = transport.getConcept("publisher");
         auto getter = any_cast<PublisherApi::Getter>(a);
         pImpl = (*getter)(transport, topic);
     }
 
     Subscriber::Subscriber(Transport transport, const string &topic, SubscriberCallback callback)
     {
-        auto a = transport.get_concept("subscriber");
+        auto a = transport.getConcept("subscriber");
         auto getter = any_cast<SubscriberApi::Getter>(a);
         pImpl = (*getter)(transport, topic, callback);
     }
 
     RpcClient::RpcClient(Transport transport, const string &topic, const Message &message, const chrono::milliseconds &timeout)
     {
-        auto a = transport.get_concept("rpc_client");
+        auto a = transport.getConcept("rpc_client");
         auto getter = any_cast<RpcClientApi::Getter>(a);
         pImpl = (*getter)(transport, topic, message, timeout);
     }
@@ -36,7 +36,7 @@ namespace UpAbstractTransport
 
     RpcServer::RpcServer(Transport transport, const string &topic, RpcServerCallback callback)
     {
-        auto a = transport.get_concept("rpc_server");
+        auto a = transport.getConcept("rpc_server");
         auto getter = any_cast<RpcServerApi::Getter>(a);
         pImpl = (*getter)(transport, topic, callback);
     }

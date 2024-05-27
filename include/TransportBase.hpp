@@ -15,11 +15,6 @@ namespace UpAbstractTransport
 {
     using Doc = nlohmann::json;
 
-    struct ConceptApi
-    {
-        virtual std::any get_factory(const std::string &) = 0;
-    };
-
     struct HiddenTransport;
     struct Serializer;
 
@@ -29,18 +24,9 @@ namespace UpAbstractTransport
 
         Transport(const Doc &init_doc);
         Transport(const char *init_string);
-        std::any get_concept(const std::string &);
-        Serializer get_serializer(const std::string &);
-    };
-
-    struct ConceptFactories
-    {
-        std::function<std::shared_ptr<ConceptApi>(const Doc &init_doc)> get_impl;
-    };
-
-    struct SerializerFactories
-    {
-        std::function<std::shared_ptr<SerializerApi>(const std::string& kind)> get_instance;
+        std::any getConcept(const std::string &);
+        std::vector<std::string> listConcepts();
+        Serializer getSerializer(const std::string &);
     };
 
     struct Message

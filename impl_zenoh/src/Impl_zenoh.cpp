@@ -1,4 +1,4 @@
-#include "UpAbstractTransport.hpp"
+#include "HiddenTransport.hpp"
 #include "Impl_zenoh.hpp"
 #include "FactoryPlugin.hpp"
 #include <iostream>
@@ -34,12 +34,21 @@ namespace Impl_zenoh
         TRACE(this, "");
     }
 
-    any TransportImpl::get_factory(const std::string &name)
+    any TransportImpl::getConcept(const std::string &name)
     {
         return getters[name];
     }
 
-    std::shared_ptr<UpAbstractTransport::ConceptApi> TransportImpl::get_instance(const nlohmann::json &doc)
+    vector<string> TransportImpl::listConcepts()
+    {
+        vector<string> ret;
+        ret.reserve(getters.size());
+        for (const auto& [k, v] : getters) ret.push_back(k);
+        return ret;
+    }
+
+
+    std::shared_ptr<UpAbstractTransport::ConceptApi> TransportImpl::getImplementation(const nlohmann::json &doc)
     {
         return make_shared<TransportImpl>(doc);
     }
@@ -47,5 +56,5 @@ namespace Impl_zenoh
 }; // Impl_zenoh
 
 UpAbstractTransport::ConceptFactories factories = {
-    Impl_zenoh::TransportImpl::get_instance};
+    Impl_zenoh::TransportImpl::getImplementation};
 FACTORY_EXPOSE(factories);

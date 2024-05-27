@@ -17,9 +17,10 @@ namespace Impl_zenoh
         TransportImpl(const nlohmann::json &doc);
         ~TransportImpl();
 
-        std::any get_factory(const std::string &);
+        std::any getConcept(const std::string &) override;
+        std::vector<std::string> listConcepts() override;
 
-        static std::shared_ptr<UpAbstractTransport::ConceptApi> get_instance(const nlohmann::json &doc);
+        static std::shared_ptr<UpAbstractTransport::ConceptApi> getImplementation(const nlohmann::json &doc);
     };
 
 }; // Impl_zenoh

@@ -34,7 +34,7 @@ namespace UpAbstractTransport
 
         path = resolve_path(init_doc["implementation"].get<string>());
         conceptPlugin = FactoryPlugin<ConceptFactories>(path);
-        conceptImpl = conceptPlugin->get_impl(init_doc);
+        conceptImpl = conceptPlugin->getImplementation(init_doc);
 
         path = resolve_path(init_doc["serializers"].get<string>());
         serialPlugin = FactoryPlugin<SerializerFactories>(path);
@@ -48,12 +48,17 @@ namespace UpAbstractTransport
     {
     }
 
-    any Transport::get_concept(const string &name)
+    any Transport::getConcept(const string &name)
     {
-        return pImpl->conceptImpl->get_factory(name);
+        return pImpl->conceptImpl->getConcept(name);
     }
 
-    Serializer Transport::get_serializer(const string &name)
+    vector<string> Transport::listConcepts()
+    {
+        return pImpl->conceptImpl->listConcepts();
+    }
+
+    Serializer Transport::getSerializer(const string &name)
     {
         Serializer ret;
         

@@ -1,4 +1,4 @@
-#include "UpAbstractTransport.hpp"
+#include "HiddenTransport.hpp"
 #include "FactoryPlugin.hpp"
 #include "proto_files/myprotocol.pb.h"
 #include <iostream>
@@ -26,7 +26,7 @@ namespace Impl_serializer
             return "hello";
         }
 
-        static shared_ptr<UpAbstractTransport::SerializerApi> get_instance(const string& kind)
+        static shared_ptr<UpAbstractTransport::SerializerApi> getInstance(const string& kind)
         {
             return make_shared<SerialObject>(kind);
         }
@@ -34,5 +34,5 @@ namespace Impl_serializer
 }; // Impl_serializer
 
 UpAbstractTransport::SerializerFactories factories = {
-    Impl_serializer::SerialObject::get_instance};
+    Impl_serializer::SerialObject::getInstance};
 FACTORY_EXPOSE(factories);
