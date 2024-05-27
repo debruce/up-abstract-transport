@@ -18,12 +18,8 @@ namespace UpAbstractTransport
         virtual std::any get_factory(const std::string &) = 0;
     };
 
-    struct SerialApi
-    {
-        virtual std::any get_factory(const std::string &) = 0;
-    };
-
     struct HiddenTransport;
+    struct SerializerApi;
 
     struct Transport
     {
@@ -32,17 +28,22 @@ namespace UpAbstractTransport
         Transport(const Doc &init_doc);
         Transport(const char *init_string);
         std::any get_concept(const std::string &);
-        std::any get_serializer(const std::string &);
+        std::shared_ptr<SerializerApi> get_serializer(const std::string &);
     };
 
-    // class Serial
-    // {
-    //     std::shared_ptr<SerialApi> pImpl;
+    struct SerializerApi
+    {
+        virtual std::string hello(const std::string &) = 0;
+    };
 
-    // public:
-    //     Serial(Transport, const std::string &);
-    //     std::string hello(const std::string &arg) { return pImpl->hello(arg); }
-    // };
+    class Serializer
+    {
+        std::shared_ptr<SerializerApi> pImpl;
+
+    public:
+        Serializer(Transport, const std::string &);
+        std::string hello(const std::string &arg);
+    };
 
     struct Message
     {
@@ -123,6 +124,6 @@ namespace UpAbstractTransport
 
     struct SerializerFactories
     {
-        std::function<std::shared_ptr<SerialApi>()> get_impl;
+        std::function<std::shared_ptr<SerializerApi>(const std::string& kind)> get_instance;
     };
 };

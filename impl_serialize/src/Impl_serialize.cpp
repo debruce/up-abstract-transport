@@ -7,31 +7,31 @@ using namespace std;
 
 namespace Impl_serializer
 {
-    struct SerialImpl : public UpAbstractTransport::SerialApi
+    struct SerialObject : public UpAbstractTransport::SerializerApi
     {
-        SerialImpl()
+        SerialObject(const string& kind)
         {
             cout << __PRETTY_FUNCTION__ << endl;
         }
 
-        ~SerialImpl()
+        ~SerialObject()
         {
             cout << __PRETTY_FUNCTION__ << endl;
         }
 
-        std::any get_factory(const std::string &name)
+        std::string hello(const std::string &name)
         {
             cout << __PRETTY_FUNCTION__ << ' ' << name << endl;
             return "hello";
         }
 
-        static shared_ptr<UpAbstractTransport::SerialApi> get_instance()
+        static shared_ptr<UpAbstractTransport::SerializerApi> get_instance(const string& kind)
         {
-            return make_shared<SerialImpl>();
+            return make_shared<SerialObject>(kind);
         }
     };
 }; // Impl_serializer
 
 UpAbstractTransport::SerializerFactories factories = {
-    Impl_serializer::SerialImpl::get_instance};
+    Impl_serializer::SerialObject::get_instance};
 FACTORY_EXPOSE(factories);

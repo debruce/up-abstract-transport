@@ -9,6 +9,16 @@ namespace UpAbstractTransport
 {
     using namespace std;
 
+    Serializer::Serializer(Transport transport, const string &kind)
+    {
+        pImpl = transport.get_serializer(kind);
+    }
+
+    std::string Serializer::hello(const string &arg)
+    {
+        return pImpl->hello(arg);
+    }
+
     Publisher::Publisher(Transport transport, const string &topic)
     {
         auto a = transport.get_concept("publisher");
@@ -66,18 +76,14 @@ namespace UpAbstractTransport
 
     HiddenTransport::HiddenTransport(const Doc &init_doc)
     {
-        cout << __PRETTY_FUNCTION__ << endl;
         string path;
 
         path = resolve_path(init_doc["implementation"].get<string>());
-        cout << "implementation = " << path << endl;
         conceptPlugin = FactoryPlugin<ConceptFactories>(path);
         conceptImpl = conceptPlugin->get_impl(init_doc);
 
         path = resolve_path(init_doc["serializers"].get<string>());
-        cout << "serializers = " << path << endl;
         serialPlugin = FactoryPlugin<SerializerFactories>(path);
-        serialImpl = serialPlugin->get_impl();
     }
 
     Transport::Transport(const Doc &init_doc) : pImpl(new HiddenTransport(init_doc))
@@ -93,9 +99,9 @@ namespace UpAbstractTransport
         return pImpl->conceptImpl->get_factory(name);
     }
 
-    any Transport::get_serializer(const string &name)
+    shared_ptr<SerializerApi> Transport::get_serializer(const string &name)
     {
-        return pImpl->serialImpl->get_factory(name);
+        return pImpl->serialPlugin->get_instance(name);
     }
 
 }; // namespace UpAbstractTransport
