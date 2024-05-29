@@ -44,7 +44,7 @@ enum InnerEnum {
 
 message Outer {
 	fixed64 a = 1;
-	optional fixed64 b = 2;
+	fixed64 b = 2;
 	fixed64 c = 3;
 	oneof alt {
 			InnerA x = 14;

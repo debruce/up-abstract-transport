@@ -3,7 +3,7 @@ from conan.tools.cmake import CMake, CMakeToolchain, cmake_layout
 from conan.tools.files import apply_conandata_patches, copy, export_conandata_patches, get, replace_in_file, rm, rmdir
 import os
 
-class UpClientZenoh(ConanFile):
+class UpAbstractTransport(ConanFile):
     name = "up-abstract-transport"
     package_type = "library"
     license = "Apache-2.0 license"
@@ -39,7 +39,7 @@ class UpClientZenoh(ConanFile):
 
     def requirements(self):
         self.requires("protobuf/3.21.12")
-        # self.requires("up-cpp/0.2.0")
+        self.requires("protobuf-c/1.4.1")
         self.requires("nlohmann_json/3.11.3")
         self.requires("boost/1.84.0")
 

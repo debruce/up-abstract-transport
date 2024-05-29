@@ -1,6 +1,7 @@
 #include "HiddenTransport.hpp"
 #include "FactoryPlugin.hpp"
 #include "proto_files/myprotocol.pb.h"
+// #include "proto_files/myprotocol.pb.h"
 #include <iostream>
 
 using namespace UpAbstractTransport;
@@ -88,11 +89,17 @@ void anyToField(
             return;
         }
         case FD::CPPTYPE_UINT32: {
-            refl->SetUInt32(&msg, field, any_cast<int>(a));
+            if (a.type() == typeid(unsigned int))
+                refl->SetUInt32(&msg, field, any_cast<unsigned int>(a));
+            else
+                refl->SetUInt32(&msg, field, any_cast<int>(a));
             return;
         }
         case FD::CPPTYPE_UINT64: {
-            refl->SetUInt64(&msg, field, any_cast<int>(a));
+            if (a.type() == typeid(unsigned int))
+                refl->SetUInt64(&msg, field, any_cast<unsigned int>(a));
+            else
+                refl->SetUInt64(&msg, field, any_cast<int>(a));
             return;
         }
         case FD::CPPTYPE_ENUM:
@@ -311,15 +318,9 @@ namespace Impl_serializer
             if (kind == "Outer") {
                 msg_ptr = new myprotocol::Outer();
             }
-            // else if (kind == "InnerEnum") {
-            //     msg_ptr = new myprotocol::InnerEnum();
+            // else if (kind == "UAttributes") {
+            //     msg_ptr = new uprotocol::v1::UAttributes();
             // }
-            else if (kind == "InnerA") {
-                msg_ptr = new myprotocol::InnerA();
-            }
-            else if (kind == "InnerB") {
-                msg_ptr = new myprotocol::InnerB();
-            }
             else throw runtime_error("Message kind is not supported.");
         }
 

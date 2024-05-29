@@ -28,13 +28,18 @@ int main(int argc, char* argv[])
 
     auto obj = transport.getSerializer("Outer");
 
+    show(transport, "Outer");
+
     AnyMap am = {
         { "a", 1234 },
         { "b", 4321 },
-        { "e", "X" },
+        // { "e", "X" },
+        { "x", AnyMap{ { "innerAX", "hello" }, { "innerAY", "world" } }} ,
         { "d", 0xdeadbeef }
     };
+    cout << "about to assign this vvvvvvvvvvvvvvvvvvvvvvvvvv" << endl;
     anymapFormat(cout, am);
+    cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << endl << endl;
     // am["a"] = 1234;
 
     obj.assign(am);
