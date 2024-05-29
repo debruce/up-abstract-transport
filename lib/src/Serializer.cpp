@@ -1,4 +1,5 @@
 #include "HiddenTransport.hpp"
+#include <sstream>
 
 namespace UpAbstractTransport
 {
