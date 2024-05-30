@@ -36,8 +36,10 @@ namespace UpAbstractTransport
         conceptPlugin = FactoryPlugin<ConceptFactories>(path);
         conceptImpl = conceptPlugin->getImplementation(init_doc);
 
-        path = resolve_path(init_doc["serializers"].get<string>());
-        serialPlugin = FactoryPlugin<SerializerFactories>(path);
+        if (init_doc.contains("serializers")) {
+            path = resolve_path(init_doc["serializers"].get<string>());
+            serialPlugin = FactoryPlugin<SerializerFactories>(path);
+        }
     }
 
     Transport::Transport(const Doc &init_doc) : pImpl(new HiddenTransport(init_doc))

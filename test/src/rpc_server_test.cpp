@@ -6,6 +6,7 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
+#if 0
 auto init_doc =
 R"(
 {
@@ -13,6 +14,14 @@ R"(
     "serializers": "${IMPL_SERIALIZE}"
 }
 )";
+#else
+auto init_doc =
+R"(
+{
+    "implementation": "${IMPL_ZENOH}"
+}
+)";
+#endif
 
 int main(int argc, char* argv[])
 {

@@ -1,0 +1,2 @@
+export IMPL_SERIALIZE=/home/gzy3g3/projects/up-abstract-transport/build/impl_serialize/impl_serialize.so
+export IMPL_ZENOH=/home/gzy3g3/projects/up-abstract-transport/build/impl_zenoh/impl_zenoh.so
