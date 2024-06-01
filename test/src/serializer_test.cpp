@@ -60,5 +60,10 @@ int main(int argc, char* argv[])
     auto packed = attr.serialize();
     cout << "serialized ###########################################" << endl;
     cout << to_hex(packed) << endl;
+
+    auto attr2 = transport.getSerializer("UAttributes");
+    attr2.deserialize(packed);
+    cout << "debugString ###########################################" << endl;
+    cout << attr.debugString();    
 }
 
