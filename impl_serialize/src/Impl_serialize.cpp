@@ -178,7 +178,9 @@ AnyMap protobuf2anymap(const gpb::Message& m, bool get_options)
     set<void*> oneof_set;
     for(auto i = 0 ; i < desc->field_count(); i++) {
         const auto field = desc->field(i);
+        // cout << "i=" << i << " name=" << field->name() << endl;
         if (auto oneof_desc = field->containing_oneof()) {
+            // cout << "oneof" << endl;
             if (oneof_set.count((void*)oneof_desc) == 0) {
                 if (get_options) {
                     OneofMap om;
@@ -209,11 +211,17 @@ AnyMap protobuf2anymap(const gpb::Message& m, bool get_options)
                 }
             }
         }
-        else if (field->type() == gpb::FieldDescriptor::TYPE_MESSAGE) { 
-            auto& submsg = refl->GetMessage(m, field); // for nested messages, option case and value case are to just recurse
-            ret.emplace(field->name(), protobuf2anymap(submsg, get_options));
+        else if (field->type() == gpb::FieldDescriptor::TYPE_MESSAGE) {
+            try {
+                auto& submsg = refl->GetMessage(m, field); // for nested messages, option case and value case are to just recurse
+                ret.emplace(field->name(), protobuf2anymap(submsg, get_options));
+            }
+            catch (const std::exception& ex) {
+                cout << "Caught exception processing field=" << field->name() << endl;
+            }
         }
         else if (field->type() == gpb::FieldDescriptor::TYPE_ENUM) {
+            // cout << "enum" << endl;
             if (get_options) { // options is a map of enum key,int pairs
                 auto enum_desc = field->enum_type();
                 EnumMap m;
@@ -229,6 +237,7 @@ AnyMap protobuf2anymap(const gpb::Message& m, bool get_options)
             }
         }
         else {
+            // cout << "tail" << endl;
             if (get_options) { // if its a scalar field, option is just the C++ type name
                 ret.emplace(field->name(), field->cpp_type_name());
             }
@@ -313,10 +322,12 @@ namespace Impl_serializer
 
         Impl(const string& kind)
         {
-            cout << "kind = " << kind << endl;
             name = kind;
-            if (kind == "attributes") {
+            if (kind == "UAttributes") {
                 msg_ptr = new uprotocol::v1::UAttributes();
+            }
+            else if (kind == "UStatus") {
+                msg_ptr = new uprotocol::v1::UStatus();
             }
             else throw runtime_error("Message kind is not supported.");
         }
@@ -326,17 +337,17 @@ namespace Impl_serializer
             delete msg_ptr;
         }
 
-        string messageName() override
+        string messageName() const override
         {
             return msg_ptr->GetTypeName();
         }
 
-        string debugString() override
+        string debugString() const override
         {
             return msg_ptr->DebugString();
         }
 
-        string serialize() override
+        string serialize() const override
         {
             return msg_ptr->SerializeAsString();
         }
@@ -352,7 +363,7 @@ namespace Impl_serializer
             return s.is_valid();
         }
 
-        AnyMap fetch(bool describe) override
+        AnyMap fetch(bool describe) const override
         {
             return protobuf2anymap(*msg_ptr, describe);
         }

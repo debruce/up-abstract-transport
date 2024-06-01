@@ -127,17 +127,17 @@ namespace UpAbstractTransport
             os << padX(pad, depth) << "}\n";
     }
 
-    string Serializer::messageName()
+    string Serializer::messageName() const
     {
         return pImpl->messageName();
     }
 
-    string Serializer::debugString()
+    string Serializer::debugString() const
     {
         return pImpl->debugString();
     }
 
-    string Serializer::serialize()
+    string Serializer::serialize() const
     {
         return pImpl->serialize();
     }
@@ -152,7 +152,7 @@ namespace UpAbstractTransport
         return pImpl->assign(arg);
     }
 
-    AnyMap Serializer::fetch(bool describe)
+    AnyMap Serializer::fetch(bool describe) const
     {
         return pImpl->fetch(describe);
     }

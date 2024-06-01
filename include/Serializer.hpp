@@ -13,12 +13,12 @@ namespace UpAbstractTransport
 
     struct SerializerApi
     {
-        virtual std::string messageName() = 0;
-        virtual std::string debugString() = 0;
-        virtual std::string serialize() = 0;
+        virtual std::string messageName() const = 0;
+        virtual std::string debugString() const = 0;
+        virtual std::string serialize() const = 0;
         virtual bool deserialize(const std::string&) = 0;
         virtual bool assign(const AnyMap& arg) = 0;
-        virtual AnyMap fetch(bool describe) = 0;
+        virtual AnyMap fetch(bool describe) const = 0;
     };
 
     class Serializer
@@ -26,12 +26,12 @@ namespace UpAbstractTransport
         std::shared_ptr<SerializerApi> pImpl;
 
     public:
-        std::string messageName();
-        std::string debugString();
-        std::string serialize();
+        std::string messageName() const;
+        std::string debugString() const;
+        std::string serialize() const;
         bool deserialize(const std::string&);
         bool assign(const AnyMap& arg);
-        AnyMap fetch(bool describe = false);
+        AnyMap fetch(bool describe = false) const;
 
         friend class Transport;
     };
