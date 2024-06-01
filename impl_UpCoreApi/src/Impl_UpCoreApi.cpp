@@ -1,75 +1,73 @@
 #include "HiddenTransport.hpp"
 #include "FactoryPlugin.hpp"
 #include "uprotocol/v1/uattributes.pb.h"
-#include "AnyMap.hpp"
-#include <iostream>
+#include "ProtobufSerializerApi.hpp"
+#include <sstream>
 
 using namespace UpAbstractTransport;
 using namespace std;
-namespace gpb = google::protobuf;
 
-namespace Impl_serializer
+string removeNewlines(const string& arg)
 {
-    struct Impl : public UpAbstractTransport::SerializerApi
+    string ret;
+    ret.reserve(arg.size());
+    for (auto c : arg) {
+        if (c == '\n') ret += ' ';
+        else ret += c;
+    }
+    return ret;
+}
+namespace Impl_UpCoreApi
+{
+    struct Impl : public UpAbstractTransport::ProtobufSerializerApi
     {
-        string name;
-        gpb::Message* msg_ptr;
+        uprotocol::v1::UAttributes* uattr;
 
-        Impl(const string& kind)
+        Impl(const string &kind)
         {
-            name = kind;
-            if (kind == "UAttributes") {
-                msg_ptr = new uprotocol::v1::UAttributes();
+            if (kind == "UAttributes")
+            {
+                uattr = new uprotocol::v1::UAttributes();
+                msg_ptr = uattr;
             }
-            else if (kind == "UStatus") {
+            else if (kind == "UStatus")
+            {
+                uattr = nullptr;
                 msg_ptr = new uprotocol::v1::UStatus();
             }
-            else throw runtime_error("Message kind is not supported.");
+            else if (kind == "UUri")
+            {
+                uattr = nullptr;
+                msg_ptr = new uprotocol::v1::UUri();
+            }
+            else
+            {
+                stringstream ss;
+                ss << "UpCoreApi plugin does not implement \"" << kind << "\"";
+                throw runtime_error(ss.str());
+            }
         }
 
-        ~Impl()
+        std::string validate() const override
         {
-            delete msg_ptr;
+            if (uattr) {
+                cout << "############### validate uattributes ###############" << endl;
+                // cout << "uuri = " << uattr->id().lsb() << ' ' << uattr->id().msb() << endl;
+                // cout << "type = " << uattr->type() << endl;
+                // cout << "priority = " << uattr->priority() << endl;
+                cout << removeNewlines(uattr->DebugString()) << endl;
+            }
+            return string();
         }
 
-        string messageName() const override
-        {
-            return msg_ptr->GetTypeName();
-        }
-
-        string debugString() const override
-        {
-            return msg_ptr->DebugString();
-        }
-
-        string serialize() const override
-        {
-            return msg_ptr->SerializeAsString();
-        }
-
-        bool deserialize(const string& arg) override
-        {
-            return msg_ptr->ParseFromString(arg);
-        }
-
-        bool assign(const AnyMap& arg) override
-        {
-            Anymap2Protobuf s(arg, *msg_ptr);
-            return s.is_valid();
-        }
-
-        AnyMap fetch(bool describe) const override
-        {
-            return protobuf2anymap(*msg_ptr, describe);
-        }
-
-        static shared_ptr<UpAbstractTransport::SerializerApi> getInstance(const string& kind)
+        static shared_ptr<UpAbstractTransport::SerializerApi> getInstance(const string &kind)
         {
             return make_shared<Impl>(kind);
         }
     };
-}; // Impl_serializer
+}; // Impl_UpCoreApi
 
 UpAbstractTransport::SerializerFactories factories = {
-    Impl_serializer::Impl::getInstance};
+    Impl_UpCoreApi::Impl::getInstance};
+
 FACTORY_EXPOSE(factories);
