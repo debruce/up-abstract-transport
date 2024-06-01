@@ -10,7 +10,7 @@ message("protobuf_INCLUDE_DIR = ${protobuf_INCLUDE_DIR}")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../impl_include)
 
-add_library(impl_serialize SHARED src/Impl_serialize.cpp)
+add_library(impl_serialize SHARED src/Impl_serialize.cpp src/AnyMap.cpp)
 target_link_libraries(impl_serialize PRIVATE
        	nlohmann_json::nlohmann_json
        	up-core-api::up-core-api
