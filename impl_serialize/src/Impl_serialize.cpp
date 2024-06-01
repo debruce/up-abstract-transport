@@ -1,7 +1,6 @@
 #include "HiddenTransport.hpp"
 #include "FactoryPlugin.hpp"
-#include "proto_files/myprotocol.pb.h"
-// #include "proto_files/myprotocol.pb.h"
+#include "uprotocol/v1/uattributes.pb.h"
 #include <iostream>
 
 using namespace UpAbstractTransport;
@@ -314,13 +313,11 @@ namespace Impl_serializer
 
         Impl(const string& kind)
         {
+            cout << "kind = " << kind << endl;
             name = kind;
-            if (kind == "Outer") {
-                msg_ptr = new myprotocol::Outer();
+            if (kind == "attributes") {
+                msg_ptr = new uprotocol::v1::UAttributes();
             }
-            // else if (kind == "UAttributes") {
-            //     msg_ptr = new uprotocol::v1::UAttributes();
-            // }
             else throw runtime_error("Message kind is not supported.");
         }
 
