@@ -218,10 +218,8 @@ namespace UpAbstractTransport
         for (auto i = 0; i < desc->field_count(); i++)
         {
             const auto field = desc->field(i);
-            // cout << "i=" << i << " name=" << field->name() << endl;
             if (auto oneof_desc = field->containing_oneof())
             {
-                // cout << "oneof" << endl;
                 if (oneof_set.count((void *)oneof_desc) == 0)
                 {
                     if (get_options)
@@ -263,19 +261,13 @@ namespace UpAbstractTransport
             }
             else if (field->type() == gpb::FieldDescriptor::TYPE_MESSAGE)
             {
-                try
-                {
+                if (!field->is_repeated()) {
                     auto &submsg = refl->GetMessage(m, field); // for nested messages, option case and value case are to just recurse
                     ret.emplace(field->name(), protobuf2anymap(submsg, get_options));
-                }
-                catch (const std::exception &ex)
-                {
-                    cout << "Caught exception processing field=" << field->name() << endl;
                 }
             }
             else if (field->type() == gpb::FieldDescriptor::TYPE_ENUM)
             {
-                // cout << "enum" << endl;
                 if (get_options)
                 { // options is a map of enum key,int pairs
                     auto enum_desc = field->enum_type();
@@ -295,7 +287,6 @@ namespace UpAbstractTransport
             }
             else
             {
-                // cout << "tail" << endl;
                 if (get_options)
                 { // if its a scalar field, option is just the C++ type name
                     ret.emplace(field->name(), field->cpp_type_name());
