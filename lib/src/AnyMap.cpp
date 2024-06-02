@@ -55,7 +55,7 @@ namespace UpAbstractTransport
         case FieldDescriptor::TYPE_ENUM:
         {
             auto e = refl->GetEnum(msg, field);
-            return std::make_pair(field->type(), e->name());
+            return make_pair(int(field->type()), string(e->name()));
         }
         default:
             return nullptr;
