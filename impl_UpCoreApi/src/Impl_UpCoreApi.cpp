@@ -7,67 +7,76 @@
 using namespace UpAbstractTransport;
 using namespace std;
 
-string removeNewlines(const string& arg)
+string removeNewlines(const string &arg)
 {
     string ret;
     ret.reserve(arg.size());
-    for (auto c : arg) {
-        if (c == '\n') ret += ' ';
-        else ret += c;
+    for (auto c : arg)
+    {
+        if (c == '\n')
+            ret += ' ';
+        else
+            ret += c;
     }
     return ret;
 }
 namespace Impl_UpCoreApi
 {
-    struct Impl : public UpAbstractTransport::ProtobufSerializerApi
+    struct Impl_UAttributes : public UpAbstractTransport::ProtobufSerializerApi
     {
-        uprotocol::v1::UAttributes* uattr;
+        uprotocol::v1::UAttributes *uattr;
 
-        Impl(const string &kind)
+        Impl_UAttributes()
         {
-            if (kind == "UAttributes")
-            {
-                uattr = new uprotocol::v1::UAttributes();
-                msg_ptr = uattr;
-            }
-            else if (kind == "UStatus")
-            {
-                uattr = nullptr;
-                msg_ptr = new uprotocol::v1::UStatus();
-            }
-            else if (kind == "UUri")
-            {
-                uattr = nullptr;
-                msg_ptr = new uprotocol::v1::UUri();
-            }
-            else
-            {
-                stringstream ss;
-                ss << "UpCoreApi plugin does not implement \"" << kind << "\"";
-                throw runtime_error(ss.str());
-            }
+            uattr = new uprotocol::v1::UAttributes();
+            msg_ptr = uattr;
         }
 
-        std::string validate() const override
+        string validate() const override
         {
-            if (uattr) {
-                cout << "############### validate uattributes ###############" << endl;
-                // cout << "uuri = " << uattr->id().lsb() << ' ' << uattr->id().msb() << endl;
-                // cout << "type = " << uattr->type() << endl;
-                // cout << "priority = " << uattr->priority() << endl;
-                cout << removeNewlines(uattr->DebugString()) << endl;
-            }
+            cout << "############### validate uattributes ###############" << endl;
+            // cout << "uuri = " << uattr->id().lsb() << ' ' << uattr->id().msb() << endl;
+            // cout << "type = " << uattr->type() << endl;
+            // cout << "priority = " << uattr->priority() << endl;
+            cout << removeNewlines(uattr->DebugString()) << endl;
             return string();
         }
+    };
 
-        static shared_ptr<UpAbstractTransport::SerializerApi> getInstance(const string &kind)
+    struct Impl_UStatus : public UpAbstractTransport::ProtobufSerializerApi
+    {
+        Impl_UStatus()
         {
-            return make_shared<Impl>(kind);
+            msg_ptr = new uprotocol::v1::UStatus();
         }
     };
+
+    struct Impl_UUri : public UpAbstractTransport::ProtobufSerializerApi
+    {
+        Impl_UUri()
+        {
+            msg_ptr = new uprotocol::v1::UUri();
+        }
+    };
+
+    static shared_ptr<UpAbstractTransport::SerializerApi> getInstance(const string &kind)
+    {
+        if (kind == "UAttributes")
+            return make_shared<Impl_UAttributes>();
+        else if (kind == "UStatus")
+            return make_shared<Impl_UStatus>();
+        else if (kind == "UUri")
+            return make_shared<Impl_UUri>();
+        else
+        {
+            stringstream ss;
+            ss << "UpCoreApi plugin does not implement \"" << kind << "\"";
+            throw runtime_error(ss.str());
+        }
+    }
 }; // Impl_UpCoreApi
 
 UpAbstractTransport::SerializerFactories factories = {
-    Impl_UpCoreApi::Impl::getInstance};
+    Impl_UpCoreApi::getInstance};
 
 FACTORY_EXPOSE(factories);
