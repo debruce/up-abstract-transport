@@ -41,7 +41,9 @@ class UpAbstractTransport(ConanFile):
         self.requires("openssl/3.2.1")
         self.requires("up-core-api/1.5.8")
         self.requires("protobuf/3.21.12")
-        self.requires("nlohmann_json/3.11.3")
+        # self.requires("nlohmann_json/3.11.2")
+        # self.requires("pybind11/2.10.4")
+        self.requires("pybind11_json/0.2.13")
         # self.requires("boost/1.84.0")
 
     def generate(self):
