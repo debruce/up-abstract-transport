@@ -9,7 +9,7 @@
 
 namespace py = pybind11;
 using namespace std;
-using namespace PluggableTransport;
+// using namespace PluggableTransport;
 
 // struct RpcClientFuture {
 //     std::future<std::tuple<std::string, Message>> f;

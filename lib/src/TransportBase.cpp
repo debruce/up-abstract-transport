@@ -3,6 +3,7 @@
 #include <any>
 #include <filesystem>
 #include <iostream>
+#include <sstream>
 #include <wordexp.h>
 
 namespace UpAbstractTransport
@@ -15,13 +16,16 @@ namespace UpAbstractTransport
         auto retval = wordexp(impl.c_str(), &we, WRDE_UNDEF);
         if (retval != 0)
         {
-            wordfree(&we);
-            throw runtime_error("wordexp expansion failed");
+            stringstream ss;
+            ss << "wordexp expansion failed on \"" << impl << '"';
+            throw runtime_error(ss.str());
         }
         if (we.we_wordc != 1)
         {
             wordfree(&we);
-            throw runtime_error("wordexp expanded to more than one path");
+            stringstream ss;
+            ss << "wordexp expanded to more than one path on \"" << impl << '"';
+            throw runtime_error(ss.str());
         }
         string result(we.we_wordv[0]);
         wordfree(&we);
@@ -31,7 +35,6 @@ namespace UpAbstractTransport
     HiddenTransport::HiddenTransport(const Doc &init_doc)
     {
         string path;
-
         path = resolve_path(init_doc["implementation"].get<string>());
         conceptPlugin = FactoryPlugin<ConceptFactories>(path);
         conceptImpl = conceptPlugin->getImplementation(init_doc);

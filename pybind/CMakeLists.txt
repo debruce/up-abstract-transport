@@ -20,13 +20,13 @@
 # project(up-abs-py VERSION 0.1.0 LANGUAGES CXX)
 # set(CMAKE_CXX_STANDARD 17)
 
-find_package(nlohmann_json REQUIRED)
+# find_package(nlohmann_json REQUIRED)
 
 set(PYBIND11_FINDPYTHON True)
 find_package(pybind11 CONFIG)
 
 pybind11_add_module(pyUpAbsTrans src/module_main.cpp)
-target_link_libraries(pyUpAbsTrans PUBLIC UpAbsTrans)
+target_link_libraries(pyUpAbsTrans PUBLIC UpAbstractTransport nlohmann_json::nlohmann_json)
 
 
 # INSTALL(TARGETS ${PROJECT_NAME})
