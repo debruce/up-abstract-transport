@@ -15,5 +15,5 @@ include_directories(include)
 
 add_subdirectory(lib)
 add_subdirectory(test)
-add_subdirectory(impl_zenoh)
+add_subdirectory(impl_Zenoh)
 add_subdirectory(impl_UpCoreApi)
