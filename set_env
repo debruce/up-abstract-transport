@@ -1,2 +1,5 @@
-export IMPL_SERIALIZE=/home/gzy3g3/projects/up-abstract-transport/build/impl_UpCoreApi/Impl_UpCoreApi.so
-export IMPL_ZENOH=/home/gzy3g3/projects/up-abstract-transport/build/impl_zenoh/impl_zenoh.so
+#export IMPL_SERIALIZE=${IMPL_ROOT}/impl_UpCoreApi/Impl_UpCoreApi.so
+#export IMPL_ZENOH=${IMPL_ROOT}/impl_zenoh/impl_zenoh.so
+
+export IMPL_SERIALIZE=`find ~ -path '*/Impl_UpCoreApi.so'`
+export IMPL_ZENOH=`find ~ -path '*/impl_zenoh.so'`
