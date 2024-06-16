@@ -1,44 +1,45 @@
-#include "HiddenTransport.h"
 #include <any>
 
-namespace UpAbstractTransport
-{
-    using namespace std;
+#include "HiddenTransport.h"
 
-    Publisher::Publisher(Transport transport, const string &topic)
-    {
-        auto a = transport.getConcept("publisher");
-        auto getter = any_cast<PublisherApi::Getter>(a);
-        pImpl = (*getter)(transport, topic);
-    }
+namespace UpAbstractTransport {
+using namespace std;
 
-    Subscriber::Subscriber(Transport transport, const string &topic, SubscriberCallback callback)
-    {
-        auto a = transport.getConcept("subscriber");
-        auto getter = any_cast<SubscriberApi::Getter>(a);
-        pImpl = (*getter)(transport, topic, callback);
-    }
+Publisher::Publisher(Transport transport, const string& topic) {
+	auto a = transport.getConcept("publisher");
+	auto getter = any_cast<PublisherApi::Getter>(a);
+	pImpl = (*getter)(transport, topic);
+}
 
-    RpcClient::RpcClient(Transport transport, const string &topic, const Message &message, const chrono::milliseconds &timeout)
-    {
-        auto a = transport.getConcept("rpc_client");
-        auto getter = any_cast<RpcClientApi::Getter>(a);
-        pImpl = (*getter)(transport, topic, message, timeout);
-    }
+Subscriber::Subscriber(Transport transport, const string& topic,
+                       SubscriberCallback callback) {
+	auto a = transport.getConcept("subscriber");
+	auto getter = any_cast<SubscriberApi::Getter>(a);
+	pImpl = (*getter)(transport, topic, callback);
+}
 
-    future<RpcReply> rpcCall(Transport transport, const string &topic, const Message &message, const chrono::milliseconds &timeout)
-    {
-        auto topicCopy = make_shared<string>(topic);
-        auto msg = make_shared<Message>(message);
-        return async([=]()
-                     { return RpcClient(transport, *topicCopy, *msg, timeout)(); });
-    }
+RpcClient::RpcClient(Transport transport, const string& topic,
+                     const Message& message,
+                     const chrono::milliseconds& timeout) {
+	auto a = transport.getConcept("rpc_client");
+	auto getter = any_cast<RpcClientApi::Getter>(a);
+	pImpl = (*getter)(transport, topic, message, timeout);
+}
 
-    RpcServer::RpcServer(Transport transport, const string &topic, RpcServerCallback callback)
-    {
-        auto a = transport.getConcept("rpc_server");
-        auto getter = any_cast<RpcServerApi::Getter>(a);
-        pImpl = (*getter)(transport, topic, callback);
-    }
+future<RpcReply> rpcCall(Transport transport, const string& topic,
+                         const Message& message,
+                         const chrono::milliseconds& timeout) {
+	auto topicCopy = make_shared<string>(topic);
+	auto msg = make_shared<Message>(message);
+	return async(
+	    [=]() { return RpcClient(transport, *topicCopy, *msg, timeout)(); });
+}
 
-}; // namespace UpAbstractTransport
+RpcServer::RpcServer(Transport transport, const string& topic,
+                     RpcServerCallback callback) {
+	auto a = transport.getConcept("rpc_server");
+	auto getter = any_cast<RpcServerApi::Getter>(a);
+	pImpl = (*getter)(transport, topic, callback);
+}
+
+};  // namespace UpAbstractTransport
