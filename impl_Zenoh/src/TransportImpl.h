@@ -1,26 +1,25 @@
 #pragma once
 
-#include "zenohc.hxx"
-#include "Trace.h"
-#include <string>
-#include <map>
-#include <nlohmann/json.hpp>
 #include <sys/sdt.h>
 
-namespace Impl_zenoh
-{
-    struct TransportImpl : public UpAbstractTransport::ConceptApi, public TraceBase
-    {
-        zenohc::Session session;
-        std::map<std::string, std::any> getters;
+#include <map>
+#include <nlohmann/json.hpp>
+#include <string>
 
-        TransportImpl(const nlohmann::json &doc);
-        ~TransportImpl();
+#include "Trace.h"
+#include "zenohc.hxx"
 
-        std::any getConcept(const std::string &) override;
-        std::vector<std::string> listConcepts() override;
+struct TransportImpl : public UpAbstractTransport::ConceptApi,
+                       public TraceBase {
+	zenohc::Session session;
+	std::map<std::string, std::any> getters;
 
-        static std::shared_ptr<UpAbstractTransport::ConceptApi> getImplementation(const nlohmann::json &doc);
-    };
+	TransportImpl(const nlohmann::json& doc);
+	~TransportImpl();
 
-}; // Impl_zenoh
+	std::any getConcept(const std::string&) override;
+	std::vector<std::string> listConcepts() override;
+
+	static std::shared_ptr<UpAbstractTransport::ConceptApi> getImplementation(
+	    const nlohmann::json& doc);
+};

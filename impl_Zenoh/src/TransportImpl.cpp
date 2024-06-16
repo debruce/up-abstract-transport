@@ -4,8 +4,8 @@
 #include <iostream>
 #include <sstream>
 
-namespace Impl_zenoh
-{
+// namespace Impl_zenoh
+// {
 
     using namespace UpAbstractTransport;
     using namespace std;
@@ -60,8 +60,8 @@ namespace Impl_zenoh
         return make_shared<TransportImpl>(doc);
     }
 
-}; // Impl_zenoh
+// }; // Impl_zenoh
 
 UpAbstractTransport::ConceptFactories factories = {
-    Impl_zenoh::TransportImpl::getImplementation};
+    TransportImpl::getImplementation};
 FACTORY_EXPOSE(factories);

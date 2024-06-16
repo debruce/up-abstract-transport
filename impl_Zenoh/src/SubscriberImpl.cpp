@@ -2,8 +2,8 @@
 #include "TransportImpl.h"
 #include "Utils.h"
 
-namespace Impl_zenoh
-{
+// namespace Impl_zenoh
+// {
 
     using namespace UpAbstractTransport;
     using namespace std;
@@ -76,4 +76,4 @@ namespace Impl_zenoh
         return make_shared<SubscriberImpl>(transport, topic, callback);
     }
 
-}; // Impl_zenoh
+// }; // Impl_zenoh

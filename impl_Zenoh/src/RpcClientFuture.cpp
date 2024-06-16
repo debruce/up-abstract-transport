@@ -1,7 +1,7 @@
 #include "HiddenTransport.h"
 #include "TransportImpl.h"
 
-namespace Impl_zenoh {
+// namespace Impl_zenoh {
 
 using namespace UpAbstractTransport;
 using namespace std;
@@ -79,4 +79,4 @@ std::shared_ptr<RpcClientApi> rpc_client_getter(Transport transport, const std::
     return make_shared<RpcClientImpl>(transport, topic, message, timeout);
 }
 
-}; // Impl_zenoh
+// }; // Impl_zenoh

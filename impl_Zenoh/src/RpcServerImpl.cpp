@@ -2,7 +2,7 @@
 #include "TransportImpl.h"
 #include "Utils.h"
 
-namespace Impl_zenoh {
+// namespace Impl_zenoh {
 
 using namespace UpAbstractTransport;
 using namespace std;
@@ -119,4 +119,4 @@ std::shared_ptr<RpcServerApi> rpc_server_getter(Transport transport, const strin
     return make_shared<RpcServerImpl>(transport, topic, callback);
 }
 
-}; // Impl_zenoh
+// }; // Impl_zenoh
