@@ -12,10 +12,10 @@
 #include "Serializer.h"
 
 namespace UpAbstractTransport {
+
 using Doc = nlohmann::json;
 
 struct HiddenTransport;
-struct Serializer;
 
 struct Transport {
 	std::shared_ptr<HiddenTransport> pImpl;
@@ -33,4 +33,5 @@ struct Message {
 };
 
 using RpcReply = std::optional<Message>;
+
 };  // namespace UpAbstractTransport
