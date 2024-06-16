@@ -1,6 +1,6 @@
-#include "HiddenTransport.hpp"
-#include "ProtobufSerializerApi.hpp"
-#include "AnyMap.hpp"
+#include "HiddenTransport.h"
+#include "ProtobufSerializerApi.h"
+#include "AnyMap.h"
 
 namespace UpAbstractTransport
 {

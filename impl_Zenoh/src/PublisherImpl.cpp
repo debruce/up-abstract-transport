@@ -1,5 +1,5 @@
-#include "HiddenTransport.hpp"
-#include "TransportImpl.hpp"
+#include "HiddenTransport.h"
+#include "TransportImpl.h"
 
 namespace Impl_zenoh {
 

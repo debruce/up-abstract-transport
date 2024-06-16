@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UpAbstractTransport.hpp"
-#include "FactoryPlugin.hpp"
+#include "UpAbstractTransport.h"
+#include "FactoryPlugin.h"
 
 namespace UpAbstractTransport
 {

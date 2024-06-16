@@ -1,4 +1,4 @@
-#include "DllHandle.hpp"
+#include "DllHandle.h"
 #include <iostream>
 #include <stdexcept>
 #include <sstream>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "zenohc.hxx"
-#include "Trace.hpp"
+#include "Trace.h"
 #include <string>
 #include <map>
 #include <nlohmann/json.hpp>

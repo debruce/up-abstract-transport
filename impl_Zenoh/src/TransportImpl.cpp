@@ -1,6 +1,6 @@
-#include "HiddenTransport.hpp"
-#include "TransportImpl.hpp"
-#include "FactoryPlugin.hpp"
+#include "HiddenTransport.h"
+#include "TransportImpl.h"
+#include "FactoryPlugin.h"
 #include <iostream>
 #include <sstream>
 

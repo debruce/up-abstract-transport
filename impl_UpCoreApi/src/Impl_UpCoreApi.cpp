@@ -1,7 +1,7 @@
-#include "HiddenTransport.hpp"
-#include "FactoryPlugin.hpp"
+#include "HiddenTransport.h"
+#include "FactoryPlugin.h"
 #include "uprotocol/v1/uattributes.pb.h"
-#include "ProtobufSerializerApi.hpp"
+#include "ProtobufSerializerApi.h"
 #include <sstream>
 
 using namespace UpAbstractTransport;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DllHandle.hpp"
+#include "DllHandle.h"
 
 // This is the name of the only symbol to look up in the DLL
 #define FACTORY_GETTER_NAME get_factory__
