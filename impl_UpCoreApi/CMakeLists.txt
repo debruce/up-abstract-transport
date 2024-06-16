@@ -5,16 +5,18 @@ find_package(up-core-api REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../impl_include)
 
-add_library(Impl_UpCoreApi SHARED src/Impl_UpCoreApi.cpp)
+get_filename_component(IMPL_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-target_link_libraries(Impl_UpCoreApi PRIVATE
+add_library(${IMPL_NAME} SHARED src/UpCoreApi.cpp)
+
+target_link_libraries(${IMPL_NAME} PRIVATE
        	nlohmann_json::nlohmann_json
        	up-core-api::up-core-api
        	protobuf::libprotobuf)
 
-target_include_directories(Impl_UpCoreApi PRIVATE
+target_include_directories(${IMPL_NAME} PRIVATE
 		${up-core-api_INCLUDE_DIR}
 		${protobuf_INCLUDE_DIR}
        	)
 
-set_target_properties(Impl_UpCoreApi PROPERTIES PREFIX "")
+set_target_properties(${IMPL_NAME} PROPERTIES PREFIX "")
