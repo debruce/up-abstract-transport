@@ -2,6 +2,7 @@
 #include "Impl_zenoh.hpp"
 #include "FactoryPlugin.hpp"
 #include <iostream>
+#include <sstream>
 
 namespace Impl_zenoh
 {
@@ -36,7 +37,13 @@ namespace Impl_zenoh
 
     any TransportImpl::getConcept(const std::string &name)
     {
-        return getters[name];
+        auto it = getters.find(name);
+        if (it == getters.end()) {
+            stringstream ss;
+            ss << "Cannot find getter for concept \"" << name << '"';
+            throw runtime_error(ss.str()); 
+        }
+        return it->second;
     }
 
     vector<string> TransportImpl::listConcepts()

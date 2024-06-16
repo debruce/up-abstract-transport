@@ -41,8 +41,7 @@ class UpAbstractTransport(ConanFile):
         self.requires("openssl/3.2.1")
         self.requires("up-core-api/1.5.8")
         self.requires("protobuf/3.21.12")
-        self.requires("nlohmann_json/3.11.3")
-        # self.requires("boost/1.84.0")
+        self.requires("nlohmann_json/3.11.2")
 
     def generate(self):
         tc = CMakeToolchain(self)

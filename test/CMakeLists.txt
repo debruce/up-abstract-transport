@@ -1,9 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-project(test VERSION 0.1.0 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 17)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
-
 add_executable(load_test src/load_test.cpp)
 target_link_libraries(load_test PUBLIC UpAbstractTransport PRIVATE nlohmann_json::nlohmann_json)
 
