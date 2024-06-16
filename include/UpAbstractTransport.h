@@ -1,8 +1,10 @@
 #pragma once
 
-#include "ConceptPublisher.h"
-#include "ConceptRpcClient.h"
-#include "ConceptRpcServer.h"
-#include "ConceptSubscriber.h"
+#include "PublisherApi.h"
+#include "SubscriberApi.h"
+
+#include "RpcClientFutureApi.h"
+#include "RpcServerApi.h"
+
 #include "Serializer.h"
 #include "TransportBase.h"
