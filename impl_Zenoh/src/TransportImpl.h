@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include "HiddenTransport.h"
 #include "Trace.h"
 #include "zenohc.hxx"
 
