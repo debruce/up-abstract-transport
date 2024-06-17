@@ -17,6 +17,7 @@ class Subscriber {
 	std::shared_ptr<SubscriberApi> pImpl;
 
 public:
-	Subscriber(Transport, const std::string&, SubscriberCallback);
+	Subscriber(Transport, const std::string&, SubscriberCallback,
+	           const TransportTag& = "default");
 };
 };  // namespace UpAbstractTransport

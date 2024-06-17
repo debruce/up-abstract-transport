@@ -13,7 +13,8 @@ class Publisher {
 	std::shared_ptr<PublisherApi> pImpl;
 
 public:
-	Publisher(Transport, const std::string&);
+	Publisher(Transport, const std::string&,
+	          const TransportTag& tag = "default");
 	void operator()(const Message& message) { (*pImpl)(message); }
 };
 };  // namespace UpAbstractTransport

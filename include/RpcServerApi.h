@@ -17,6 +17,7 @@ class RpcServer {
 	std::shared_ptr<RpcServerApi> pImpl;
 
 public:
-	RpcServer(Transport, const std::string&, RpcServerCallback);
+	RpcServer(Transport, const std::string&, RpcServerCallback,
+	          const TransportTag& = "default");
 };
 };  // namespace UpAbstractTransport

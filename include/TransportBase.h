@@ -17,6 +17,20 @@ using Doc = nlohmann::json;
 
 struct HiddenTransport;
 
+struct TransportTag {
+	std::string name;
+
+	template <typename T>
+	TransportTag(T&& name) : name(name) {}
+
+	virtual ~TransportTag() {}
+
+	template <typename T>
+	bool operator==(T&& arg) const {
+		return name == arg;
+	}
+};
+
 struct Transport {
 	std::shared_ptr<HiddenTransport> pImpl;
 

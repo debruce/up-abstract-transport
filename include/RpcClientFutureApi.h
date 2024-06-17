@@ -10,16 +10,19 @@ struct RpcClientApi {
 	virtual RpcReply operator()() = 0;
 };
 
-class RpcClient {
+class RpcClientFuture {
 	std::shared_ptr<RpcClientApi> pImpl;
 
 public:
-	RpcClient(Transport, const std::string&, const Message&,
-	          const std::chrono::milliseconds&);
+	RpcClientFuture(Transport, const std::string&, const Message&,
+	                const std::chrono::milliseconds&,
+	                const TransportTag& = "default");
 
 	RpcReply operator()() { return (*pImpl)(); }
 };
 
-std::future<RpcReply> rpcCall(Transport, const std::string&, const Message&,
-                              const std::chrono::milliseconds&);
+std::future<RpcReply> rpcCallFuture(Transport, const std::string&,
+                                    const Message&,
+                                    const std::chrono::milliseconds&,
+                                    const TransportTag& = "default");
 };  // namespace UpAbstractTransport
