@@ -7,14 +7,14 @@ using namespace std;
 
 Publisher::Publisher(Transport transport, const string& topic,
                      const TransportTag& tag) {
-	auto a = transport.getConcept("publisher");
+	auto a = transport.getConcept(tag, "publisher");
 	auto getter = any_cast<PublisherApi::Getter>(a);
 	pImpl = (*getter)(transport, topic);
 }
 
 Subscriber::Subscriber(Transport transport, const string& topic,
                        SubscriberCallback callback, const TransportTag& tag) {
-	auto a = transport.getConcept("subscriber");
+	auto a = transport.getConcept(tag, "subscriber");
 	auto getter = any_cast<SubscriberApi::Getter>(a);
 	pImpl = (*getter)(transport, topic, callback);
 }
@@ -23,7 +23,7 @@ RpcClientFuture::RpcClientFuture(Transport transport, const string& topic,
                                  const Message& message,
                                  const chrono::milliseconds& timeout,
                                  const TransportTag& tag) {
-	auto a = transport.getConcept("rpc_client");
+	auto a = transport.getConcept(tag, "rpc_client");
 	auto getter = any_cast<RpcClientApi::Getter>(a);
 	pImpl = (*getter)(transport, topic, message, timeout);
 }
@@ -43,7 +43,7 @@ future<RpcReply> rpcCallFuture(Transport transport, const string& topic,
 
 RpcServer::RpcServer(Transport transport, const string& topic,
                      RpcServerCallback callback, const TransportTag& tag) {
-	auto a = transport.getConcept("rpc_server");
+	auto a = transport.getConcept(tag, "rpc_server");
 	auto getter = any_cast<RpcServerApi::Getter>(a);
 	pImpl = (*getter)(transport, topic, callback);
 }

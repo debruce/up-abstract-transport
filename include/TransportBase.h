@@ -36,9 +36,9 @@ struct Transport {
 
 	Transport(const Doc& init_doc);
 	Transport(const char* init_string);
-	std::any getConcept(const std::string&);
-	std::vector<std::string> listConcepts();
 	Serializer getSerializer(const std::string&);
+	std::any getConcept(const TransportTag& tag, const std::string&);
+	// std::vector<std::string> listConcepts();
 };
 
 struct Message {

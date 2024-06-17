@@ -32,14 +32,13 @@ string resolve_path(const string& impl) {
 
 HiddenTransport::HiddenTransport(const Doc& init_doc) {
 	string path;
-	path = resolve_path(init_doc["Zenoh"].get<string>());
-	conceptPlugin = FactoryPlugin<ConceptFactories>(path);
-	conceptImpl = conceptPlugin->getImplementation(init_doc);
 
-	if (init_doc.contains("serializers")) {
-		path = resolve_path(init_doc["serializers"].get<string>());
-		serialPlugin = FactoryPlugin<SerializerFactories>(path);
-	}
+	path = resolve_path(init_doc["serializers"].get<string>());
+	serialPlugin = FactoryPlugin<SerializerFactories>(path);
+
+	path = resolve_path(init_doc["Zenoh"].get<string>());
+	concept.plugin = FactoryPlugin<ConceptFactories>(path);
+	concept.impl = concept.plugin->getImplementation(init_doc);
 }
 
 Transport::Transport(const Doc& init_doc)
@@ -48,19 +47,19 @@ Transport::Transport(const Doc& init_doc)
 Transport::Transport(const char* init_string)
     : Transport(Doc::parse(init_string)) {}
 
-any Transport::getConcept(const string& name) {
-	return pImpl->conceptImpl->getConcept(name);
-}
-
-vector<string> Transport::listConcepts() {
-	return pImpl->conceptImpl->listConcepts();
-}
-
 Serializer Transport::getSerializer(const string& name) {
 	Serializer ret;
 
 	ret.pImpl = pImpl->serialPlugin->get_instance(name);
 	return ret;
 }
+
+any Transport::getConcept(const TransportTag& tag, const string& name) {
+	return pImpl->concept.impl->getConcept(name);
+}
+
+// vector<string> Transport::listConcepts() {
+// 	return pImpl->conceptImpl->listConcepts();
+// }
 
 };  // namespace UpAbstractTransport

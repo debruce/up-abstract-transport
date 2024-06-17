@@ -45,7 +45,7 @@ struct SubscriberImpl : public SubscriberApi {
 	               SubscriberCallback _callback)
 	    : expr(topic) {
 		trans_impl =
-		    dynamic_pointer_cast<TransportImpl>(transport.pImpl->conceptImpl);
+		    dynamic_pointer_cast<TransportImpl>(transport.pImpl->concept.impl);
 		listening_topic = topic;
 		callback = _callback;
 		handle =

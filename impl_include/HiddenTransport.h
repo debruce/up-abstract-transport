@@ -19,10 +19,17 @@ struct SerializerFactories {
 	    get_instance;
 };
 
+struct Concept {
+	FactoryPlugin<ConceptFactories> plugin;
+	std::shared_ptr<ConceptApi> impl;
+};
+
+
 struct HiddenTransport {
-	FactoryPlugin<ConceptFactories> conceptPlugin;
-	std::shared_ptr<ConceptApi> conceptImpl;
+	// FactoryPlugin<ConceptFactories> conceptPlugin;
+	// std::shared_ptr<ConceptApi> conceptImpl;
 	FactoryPlugin<SerializerFactories> serialPlugin;
+	Concept concept;
 
 	HiddenTransport(const Doc& init_doc);
 };
