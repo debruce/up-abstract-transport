@@ -7,22 +7,13 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-#if 0
 auto init_doc =
-R"(
+    R"(
 {
     "implementation": "${IMPL_ZENOH}",
     "serializers": "${IMPL_SERIALIZE}"
 }
 )";
-#else
-auto init_doc =
-    R"(
-{
-    "implementation": "${IMPL_ZENOH}"
-}
-)";
-#endif
 
 template <class... Args>
 string genString(const char* fmt, Args... args) {
@@ -34,8 +25,8 @@ string genString(const char* fmt, Args... args) {
 int main(int argc, char* argv[]) {
 	auto transport = Transport(init_doc);
 
-	auto p1 = Publisher(transport, "upl/p1");
-	auto p2 = Publisher(transport, "upl/p2");
+	auto p1 = Publisher(transport, "upl/p1", "Zenoh");
+	auto p2 = Publisher(transport, "upl/p2", "Zenoh");
 
 	for (auto i = 0; i < 5; i++) {
 		cout << endl << "client code pubishing " << i << endl;

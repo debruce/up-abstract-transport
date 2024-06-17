@@ -8,22 +8,13 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-#if 0
 auto init_doc =
-R"(
+    R"(
 {
     "implementation": "${IMPL_ZENOH}",
     "serializers": "${IMPL_SERIALIZE}"
 }
 )";
-#else
-auto init_doc =
-    R"(
-{
-    "implementation": "${IMPL_ZENOH}"
-}
-)";
-#endif
 
 int main(int argc, char* argv[]) {
 	auto transport = Transport(init_doc);
@@ -41,6 +32,6 @@ int main(int argc, char* argv[]) {
 			uattributes += std::toupper(c);
 		return Message{upayload, uattributes};
 	};
-	auto rpc_server = RpcServer(transport, "demo/rpc/*", callback);
+	auto rpc_server = RpcServer(transport, "demo/rpc/*", callback, "Zenoh");
 	sleep(10000);
 }

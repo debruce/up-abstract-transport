@@ -7,22 +7,13 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-#if 0
 auto init_doc =
-R"(
+    R"(
 {
     "implementation": "${IMPL_ZENOH}",
     "serializers": "${IMPL_SERIALIZE}"
 }
 )";
-#else
-auto init_doc =
-    R"(
-{
-    "implementation": "${IMPL_ZENOH}"
-}
-)";
-#endif
 
 int main(int argc, char* argv[]) {
 	auto transport = Transport(init_doc);
@@ -33,6 +24,6 @@ int main(int argc, char* argv[]) {
 		     << " payload=" << message.payload
 		     << " attributes=" << message.attributes << endl;
 	};
-	auto subscriber = Subscriber(transport, "upl/*", callback);
+	auto subscriber = Subscriber(transport, "upl/*", callback, "Zenoh");
 	sleep(10);
 }
