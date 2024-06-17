@@ -88,7 +88,7 @@ struct RpcServerImpl : public RpcServerApi {
 	}
 
 	RpcServerImpl(Transport transport, const string& topic,
-	              RpcServerCallback _callback)
+	              RpcServerCallback _callback, const TransportTag& tag)
 	    : expr(topic) {
 		trans_impl = transport.pImpl->getTransportImpl<TransportImpl>("Zenoh");
 		listening_topic = topic;
@@ -109,6 +109,6 @@ struct RpcServerImpl : public RpcServerApi {
 
 std::shared_ptr<RpcServerApi> rpc_server_getter(Transport transport,
                                                 const string& topic,
-                                                RpcServerCallback callback) {
-	return make_shared<RpcServerImpl>(transport, topic, callback);
+                                                RpcServerCallback callback, const TransportTag& tag) {
+	return make_shared<RpcServerImpl>(transport, topic, callback, tag);
 }

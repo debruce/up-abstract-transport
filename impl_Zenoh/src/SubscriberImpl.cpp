@@ -42,7 +42,7 @@ struct SubscriberImpl : public SubscriberApi {
 	}
 
 	SubscriberImpl(Transport transport, const std::string& topic,
-	               SubscriberCallback _callback)
+	               SubscriberCallback _callback, const TransportTag& tag)
 	    : expr(topic) {
 		trans_impl = transport.pImpl->getTransportImpl<TransportImpl>("Zenoh");
 		listening_topic = topic;
@@ -60,6 +60,6 @@ struct SubscriberImpl : public SubscriberApi {
 
 shared_ptr<SubscriberApi> subscriber_getter(Transport transport,
                                             const std::string& topic,
-                                            SubscriberCallback callback) {
-	return make_shared<SubscriberImpl>(transport, topic, callback);
+                                            SubscriberCallback callback, const TransportTag& tag) {
+	return make_shared<SubscriberImpl>(transport, topic, callback, tag);
 }

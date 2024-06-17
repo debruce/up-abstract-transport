@@ -10,7 +10,7 @@ using RpcServerCallback =
 struct RpcServerApi {
 	typedef std::shared_ptr<RpcServerApi> (*Getter)(Transport,
 	                                                const std::string&,
-	                                                RpcServerCallback);
+	                                                RpcServerCallback, const TransportTag&);
 };
 
 class RpcServer {
@@ -18,6 +18,6 @@ class RpcServer {
 
 public:
 	RpcServer(Transport, const std::string&, RpcServerCallback,
-	          const TransportTag& = "default");
+	          const TransportTag& = "Zenoh");
 };
 };  // namespace UpAbstractTransport

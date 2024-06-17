@@ -6,7 +6,7 @@ namespace UpAbstractTransport {
 struct RpcClientApi {
 	typedef std::shared_ptr<RpcClientApi> (*Getter)(
 	    Transport, const std::string&, const Message&,
-	    const std::chrono::milliseconds&);
+	    const std::chrono::milliseconds&, const TransportTag&);
 	virtual RpcReply operator()() = 0;
 };
 
@@ -16,7 +16,7 @@ class RpcClientFuture {
 public:
 	RpcClientFuture(Transport, const std::string&, const Message&,
 	                const std::chrono::milliseconds&,
-	                const TransportTag& = "default");
+	                const TransportTag& = "Zenoh");
 
 	RpcReply operator()() { return (*pImpl)(); }
 };
@@ -24,5 +24,5 @@ public:
 std::future<RpcReply> rpcCallFuture(Transport, const std::string&,
                                     const Message&,
                                     const std::chrono::milliseconds&,
-                                    const TransportTag& = "default");
+                                    const TransportTag& = "Zenoh");
 };  // namespace UpAbstractTransport

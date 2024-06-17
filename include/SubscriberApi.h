@@ -10,7 +10,7 @@ using SubscriberCallback =
 struct SubscriberApi {
 	typedef std::shared_ptr<SubscriberApi> (*Getter)(Transport,
 	                                                 const std::string&,
-	                                                 SubscriberCallback);
+	                                                 SubscriberCallback, const TransportTag&);
 };
 
 class Subscriber {
@@ -18,6 +18,6 @@ class Subscriber {
 
 public:
 	Subscriber(Transport, const std::string&, SubscriberCallback,
-	           const TransportTag& = "default");
+	           const TransportTag& = "Zenoh");
 };
 };  // namespace UpAbstractTransport

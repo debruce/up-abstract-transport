@@ -33,3 +33,4 @@
 
 CMakeUserPresets.json
 build
+.vscode

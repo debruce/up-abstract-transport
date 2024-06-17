@@ -25,7 +25,7 @@ struct RpcClientImpl : public RpcClientApi {
 	z_owned_reply_channel_t channel;
 
 	RpcClientImpl(Transport transport, const string& topic,
-	              const Message& message, const chrono::milliseconds& timeout) {
+	              const Message& message, const chrono::milliseconds& timeout, const TransportTag& tag) {
 		trans_impl = transport.pImpl->getTransportImpl<TransportImpl>("Zenoh");
 		z_keyexpr_t keyexpr = z_keyexpr(topic.c_str());
 		if (!z_check(keyexpr))
@@ -71,6 +71,6 @@ struct RpcClientImpl : public RpcClientApi {
 
 std::shared_ptr<RpcClientApi> rpc_client_getter(
     Transport transport, const std::string& topic, const Message& message,
-    const chrono::milliseconds& timeout) {
-	return make_shared<RpcClientImpl>(transport, topic, message, timeout);
+    const chrono::milliseconds& timeout, const TransportTag& tag) {
+	return make_shared<RpcClientImpl>(transport, topic, message, timeout, tag);
 }

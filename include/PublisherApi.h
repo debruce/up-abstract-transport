@@ -5,7 +5,7 @@
 namespace UpAbstractTransport {
 struct PublisherApi {
 	typedef std::shared_ptr<PublisherApi> (*Getter)(Transport,
-	                                                const std::string&);
+	                                                const std::string&, const TransportTag&);
 	virtual void operator()(const Message&) = 0;
 };
 
@@ -14,7 +14,7 @@ class Publisher {
 
 public:
 	Publisher(Transport, const std::string&,
-	          const TransportTag& tag = "default");
+	          const TransportTag& tag = "Zenoh");
 	void operator()(const Message& message) { (*pImpl)(message); }
 };
 };  // namespace UpAbstractTransport
