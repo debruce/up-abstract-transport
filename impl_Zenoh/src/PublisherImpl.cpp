@@ -13,7 +13,8 @@ struct PublisherImpl : public PublisherApi {
 	shared_ptr<TransportImpl> trans_impl;
 	z_owned_publisher_t handle;
 
-	PublisherImpl(Transport transport, const std::string& expr, const TransportTag& tag) {
+	PublisherImpl(Transport transport, const std::string& expr,
+	              const TransportTag& tag) {
 		trans_impl = transport.pImpl->getTransportImpl<TransportImpl>("Zenoh");
 		handle = z_declare_publisher(trans_impl->session.loan(),
 		                             z_keyexpr(expr.c_str()), nullptr);
@@ -39,6 +40,7 @@ struct PublisherImpl : public PublisherApi {
 };
 
 std::shared_ptr<PublisherApi> publisher_getter(Transport transport,
-                                               const std::string& name, const TransportTag& tag) {
+                                               const std::string& name,
+                                               const TransportTag& tag) {
 	return make_shared<PublisherImpl>(transport, name, tag);
 }

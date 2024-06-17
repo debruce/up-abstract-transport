@@ -10,7 +10,8 @@ using SubscriberCallback =
 struct SubscriberApi {
 	typedef std::shared_ptr<SubscriberApi> (*Getter)(Transport,
 	                                                 const std::string&,
-	                                                 SubscriberCallback, const TransportTag&);
+	                                                 SubscriberCallback,
+	                                                 const TransportTag&);
 };
 
 class Subscriber {

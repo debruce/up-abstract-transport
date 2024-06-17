@@ -7,17 +7,21 @@ using namespace UpAbstractTransport;
 using namespace std;
 
 shared_ptr<PublisherApi> publisher_getter(Transport transport,
-                                          const string& name, const TransportTag&);
+                                          const string& name,
+                                          const TransportTag&);
 shared_ptr<SubscriberApi> subscriber_getter(Transport transport,
                                             const string& topic,
-                                            SubscriberCallback callback, const TransportTag&);
+                                            SubscriberCallback callback,
+                                            const TransportTag&);
 shared_ptr<RpcClientApi> rpc_client_getter(Transport transport,
                                            const string& topic,
                                            const Message& message,
-                                           const chrono::milliseconds& timeout, const TransportTag&);
+                                           const chrono::milliseconds& timeout,
+                                           const TransportTag&);
 shared_ptr<RpcServerApi> rpc_server_getter(Transport transport,
                                            const string& topic,
-                                           RpcServerCallback callback, const TransportTag&);
+                                           RpcServerCallback callback,
+                                           const TransportTag&);
 
 static zenohc::Session inst() {
 	zenohc::Config config;

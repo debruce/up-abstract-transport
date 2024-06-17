@@ -10,7 +10,8 @@ using RpcServerCallback =
 struct RpcServerApi {
 	typedef std::shared_ptr<RpcServerApi> (*Getter)(Transport,
 	                                                const std::string&,
-	                                                RpcServerCallback, const TransportTag&);
+	                                                RpcServerCallback,
+	                                                const TransportTag&);
 };
 
 class RpcServer {

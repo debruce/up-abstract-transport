@@ -109,6 +109,7 @@ struct RpcServerImpl : public RpcServerApi {
 
 std::shared_ptr<RpcServerApi> rpc_server_getter(Transport transport,
                                                 const string& topic,
-                                                RpcServerCallback callback, const TransportTag& tag) {
+                                                RpcServerCallback callback,
+                                                const TransportTag& tag) {
 	return make_shared<RpcServerImpl>(transport, topic, callback, tag);
 }
