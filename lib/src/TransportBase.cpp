@@ -39,7 +39,8 @@ HiddenTransport::HiddenTransport(const Doc& init_doc) {
 
 	path = resolve_path(init_doc["Zenoh"].get<string>());
 	auto plugin = FactoryPlugin<ConceptFactories>(path);
-	transports.emplace("Zenoh", TransportPlugin{plugin, plugin->getImplementation(init_doc)} );
+	transports.emplace(
+	    "Zenoh", TransportPlugin{plugin, plugin->getImplementation(init_doc)});
 }
 
 Transport::Transport(const Doc& init_doc)

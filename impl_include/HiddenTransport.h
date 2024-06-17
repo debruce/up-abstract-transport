@@ -1,8 +1,9 @@
 #pragma once
 
+#include <map>
+
 #include "FactoryPlugin.h"
 #include "UpAbstractTransport.h"
-#include <map>
 
 namespace UpAbstractTransport {
 struct ConceptApi {
@@ -27,9 +28,9 @@ struct TransportPlugin {
 
 struct HiddenTransport {
 	FactoryPlugin<SerializerFactories> serialPlugin;
-	std::map<std::string, TransportPlugin>	transports;
+	std::map<std::string, TransportPlugin> transports;
 
 	HiddenTransport(const Doc& init_doc);
 };
 
-};  // namespace UpAbstractTransport 
+};  // namespace UpAbstractTransport

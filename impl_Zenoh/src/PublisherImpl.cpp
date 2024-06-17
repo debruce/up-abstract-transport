@@ -14,8 +14,8 @@ struct PublisherImpl : public PublisherApi {
 	z_owned_publisher_t handle;
 
 	PublisherImpl(Transport transport, const std::string& expr) {
-		trans_impl =
-		    dynamic_pointer_cast<TransportImpl>(transport.pImpl->transports["Zenoh"].impl);
+		trans_impl = dynamic_pointer_cast<TransportImpl>(
+		    transport.pImpl->transports["Zenoh"].impl);
 		handle = z_declare_publisher(trans_impl->session.loan(),
 		                             z_keyexpr(expr.c_str()), nullptr);
 		if (!z_check(handle))

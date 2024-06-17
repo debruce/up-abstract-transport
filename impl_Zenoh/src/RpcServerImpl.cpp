@@ -90,8 +90,8 @@ struct RpcServerImpl : public RpcServerApi {
 	RpcServerImpl(Transport transport, const string& topic,
 	              RpcServerCallback _callback)
 	    : expr(topic) {
-		trans_impl =
-		    dynamic_pointer_cast<TransportImpl>(transport.pImpl->transports["Zenoh"].impl);
+		trans_impl = dynamic_pointer_cast<TransportImpl>(
+		    transport.pImpl->transports["Zenoh"].impl);
 		listening_topic = topic;
 		callback = _callback;
 

@@ -26,8 +26,8 @@ struct RpcClientImpl : public RpcClientApi {
 
 	RpcClientImpl(Transport transport, const string& topic,
 	              const Message& message, const chrono::milliseconds& timeout) {
-		trans_impl =
-		    dynamic_pointer_cast<TransportImpl>(transport.pImpl->transports["Zenoh"].impl);
+		trans_impl = dynamic_pointer_cast<TransportImpl>(
+		    transport.pImpl->transports["Zenoh"].impl);
 
 		z_keyexpr_t keyexpr = z_keyexpr(topic.c_str());
 		if (!z_check(keyexpr))
