@@ -44,8 +44,7 @@ struct SubscriberImpl : public SubscriberApi {
 	SubscriberImpl(Transport transport, const std::string& topic,
 	               SubscriberCallback _callback)
 	    : expr(topic) {
-		trans_impl = dynamic_pointer_cast<TransportImpl>(
-		    transport.pImpl->transports["Zenoh"].impl);
+		trans_impl = transport.pImpl->getTransportImpl<TransportImpl>("Zenoh");
 		listening_topic = topic;
 		callback = _callback;
 		handle =

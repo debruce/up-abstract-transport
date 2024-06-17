@@ -90,11 +90,9 @@ struct RpcServerImpl : public RpcServerApi {
 	RpcServerImpl(Transport transport, const string& topic,
 	              RpcServerCallback _callback)
 	    : expr(topic) {
-		trans_impl = dynamic_pointer_cast<TransportImpl>(
-		    transport.pImpl->transports["Zenoh"].impl);
+		trans_impl = transport.pImpl->getTransportImpl<TransportImpl>("Zenoh");
 		listening_topic = topic;
 		callback = _callback;
-
 		z_owned_closure_query_t closure = z_closure(_handler, NULL, this);
 		qable = z_declare_queryable(trans_impl->session.loan(), expr,
 		                            z_move(closure), NULL);

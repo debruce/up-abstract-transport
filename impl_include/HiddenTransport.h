@@ -31,6 +31,16 @@ struct HiddenTransport {
 	std::map<std::string, TransportPlugin> transports;
 
 	HiddenTransport(const Doc& init_doc);
+
+	template <typename T>
+	std::shared_ptr<T> getTransportImpl(const std::string& kind) {
+		auto it = transports.find(kind);
+		if (it == transports.end()) {
+			throw std::runtime_error(
+			    std::string("getTransportImpl annot find ") + kind);
+		}
+		return std::dynamic_pointer_cast<T>(it->second.impl);
+	}
 };
 
 };  // namespace UpAbstractTransport
