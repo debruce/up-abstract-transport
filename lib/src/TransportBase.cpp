@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 
 #include "HiddenTransport.h"
 
@@ -37,8 +38,8 @@ HiddenTransport::HiddenTransport(const Doc& init_doc) {
 	serialPlugin = FactoryPlugin<SerializerFactories>(path);
 
 	path = resolve_path(init_doc["Zenoh"].get<string>());
-	concept.plugin = FactoryPlugin<ConceptFactories>(path);
-	concept.impl = concept.plugin->getImplementation(init_doc);
+	auto plugin = FactoryPlugin<ConceptFactories>(path);
+	transports.emplace("Zenoh", TransportPlugin{plugin, plugin->getImplementation(init_doc)} );
 }
 
 Transport::Transport(const Doc& init_doc)
@@ -55,7 +56,11 @@ Serializer Transport::getSerializer(const string& name) {
 }
 
 any Transport::getConcept(const TransportTag& tag, const string& name) {
-	return pImpl->concept.impl->getConcept(name);
+	auto it = pImpl->transports.find(tag.name);
+	if (it == pImpl->transports.end()) {
+		throw runtime_error("Cannot find transport from tag");
+	}
+	return it->second.impl->getConcept(name);
 }
 
 // vector<string> Transport::listConcepts() {

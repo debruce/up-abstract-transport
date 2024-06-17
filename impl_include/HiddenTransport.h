@@ -2,6 +2,7 @@
 
 #include "FactoryPlugin.h"
 #include "UpAbstractTransport.h"
+#include <map>
 
 namespace UpAbstractTransport {
 struct ConceptApi {
@@ -19,18 +20,16 @@ struct SerializerFactories {
 	    get_instance;
 };
 
-struct Concept {
+struct TransportPlugin {
 	FactoryPlugin<ConceptFactories> plugin;
 	std::shared_ptr<ConceptApi> impl;
 };
 
 struct HiddenTransport {
-	// FactoryPlugin<ConceptFactories> conceptPlugin;
-	// std::shared_ptr<ConceptApi> conceptImpl;
 	FactoryPlugin<SerializerFactories> serialPlugin;
-	Concept concept;
+	std::map<std::string, TransportPlugin>	transports;
 
 	HiddenTransport(const Doc& init_doc);
 };
 
-};  // namespace UpAbstractTransport
+};  // namespace UpAbstractTransport 
