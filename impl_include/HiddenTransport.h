@@ -24,7 +24,6 @@ struct Concept {
 	std::shared_ptr<ConceptApi> impl;
 };
 
-
 struct HiddenTransport {
 	// FactoryPlugin<ConceptFactories> conceptPlugin;
 	// std::shared_ptr<ConceptApi> conceptImpl;
