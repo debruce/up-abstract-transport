@@ -11,7 +11,7 @@ using namespace UpAbstractTransport;
 auto init_doc =
     R"(
 {
-    "implementation": "${IMPL_ZENOH}",
+    "Zenoh": "${IMPL_ZENOH}",
     "serializers": "${IMPL_SERIALIZE}"
 }
 )";

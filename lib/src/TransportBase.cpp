@@ -32,7 +32,7 @@ string resolve_path(const string& impl) {
 
 HiddenTransport::HiddenTransport(const Doc& init_doc) {
 	string path;
-	path = resolve_path(init_doc["implementation"].get<string>());
+	path = resolve_path(init_doc["Zenoh"].get<string>());
 	conceptPlugin = FactoryPlugin<ConceptFactories>(path);
 	conceptImpl = conceptPlugin->getImplementation(init_doc);
 
