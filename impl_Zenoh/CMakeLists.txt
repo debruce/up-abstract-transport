@@ -11,7 +11,7 @@ add_library(${IMPL_NAME} SHARED
     src/TransportImpl.cpp
     src/PublisherImpl.cpp
     src/SubscriberImpl.cpp
-    src/RpcClientFuture.cpp
+    src/RpcClientFutureImpl.cpp
     src/RpcServerImpl.cpp
     )
 target_link_libraries(${IMPL_NAME} PRIVATE nlohmann_json::nlohmann_json zenohc::lib)
