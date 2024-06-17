@@ -34,8 +34,10 @@ future<RpcReply> rpcCallFuture(Transport transport, const string& topic,
                                const TransportTag& tag) {
 	auto topicCopy = make_shared<string>(topic);
 	auto msg = make_shared<Message>(message);
+	auto tagCopy = make_shared<TransportTag>(tag);
 	return async([=]() {
-		return RpcClientFuture(transport, *topicCopy, *msg, timeout)();
+		return RpcClientFuture(transport, *topicCopy, *msg, timeout,
+		                       *tagCopy)();
 	});
 }
 
