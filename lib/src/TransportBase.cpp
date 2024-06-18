@@ -41,6 +41,11 @@ HiddenTransport::HiddenTransport(const Doc& init_doc) {
 	auto plugin = FactoryPlugin<ConceptFactories>(path);
 	transports.emplace(
 	    "Zenoh", TransportPlugin{plugin, plugin->getImplementation(init_doc)});
+
+	path = resolve_path(init_doc["UdpSocket"].get<string>());
+	plugin = FactoryPlugin<ConceptFactories>(path);
+	transports.emplace(
+	    "UdpSocket", TransportPlugin{plugin, plugin->getImplementation(init_doc)});
 }
 
 Transport::Transport(const Doc& init_doc)
