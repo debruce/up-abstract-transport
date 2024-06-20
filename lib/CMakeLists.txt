@@ -19,7 +19,10 @@ target_link_libraries(UpAbstractTransport
     ${CMAKE_DL_LIBS}
     Threads::Threads
     OpenSSL::Crypto
-    protobuf::libprotobuf)
+    protobuf::libprotobuf
+    )
 
-target_include_directories(UpAbstractTransport PRIVATE ${protobuf_INCLUDE_DIR})
+target_include_directories(UpAbstractTransport PRIVATE
+    ${protobuf_INCLUDE_DIR}
+    )
 

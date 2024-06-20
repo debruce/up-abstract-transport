@@ -4,6 +4,7 @@
 #include "HiddenTransport.h"
 #include "ProtobufSerializerApi.h"
 #include "uprotocol/v1/uattributes.pb.h"
+#include "uprotocol/v1/ustatus.pb.h"
 
 using namespace UpAbstractTransport;
 using namespace std;

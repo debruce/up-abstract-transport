@@ -7,14 +7,6 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-auto init_doc =
-    R"(
-{
-    "Zenoh": "${IMPL_ZENOH}",
-    "serializers": "${IMPL_SERIALIZE}"
-}
-)";
-
 template <class... Args>
 string genString(const char* fmt, Args... args) {
 	char buf[128];
@@ -23,7 +15,7 @@ string genString(const char* fmt, Args... args) {
 }
 
 int main(int argc, char* argv[]) {
-	auto transport = Transport(init_doc);
+	auto transport = Transport();
 
 	for (auto i = 0; i < 5; i++) {
 		auto f = rpcCallFuture(

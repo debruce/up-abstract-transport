@@ -8,16 +8,8 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-auto init_doc =
-    R"(
-{
-    "Zenoh": "${IMPL_ZENOH}",
-    "serializers": "${IMPL_SERIALIZE}"
-}
-)";
-
 int main(int argc, char* argv[]) {
-	auto transport = Transport(init_doc);
+	auto transport = Transport();
 	auto callback = [](const string& sending_topic,
 	                   const string& listening_topic,
 	                   const Message& message) -> RpcReply {

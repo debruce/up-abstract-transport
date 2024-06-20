@@ -7,18 +7,10 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-auto init_doc =
-    R"(
-{
-    "Zenoh": "${IMPL_ZENOH}",
-    "serializers": "${IMPL_SERIALIZE}"
-}
-)";
-
 int main(int argc, char* argv[]) {
 	{
 		cout << "before load" << endl;
-		auto transport = Transport(init_doc);
+		auto transport = Transport();
 		cout << "after load" << endl;
 		// auto concepts = transport.listConcepts();
 		// for (const auto k : concepts) {

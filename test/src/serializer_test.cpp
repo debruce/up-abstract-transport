@@ -7,14 +7,6 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-auto init_doc =
-    R"(
-{
-    "Zenoh": "${IMPL_ZENOH}",
-    "serializers": "${IMPL_SERIALIZE}"
-}
-)";
-
 void show(const Serializer& obj, bool describe = true) {
 	auto am = obj.fetch(describe);
 	cout << "######## showing " << obj.messageName()
@@ -114,7 +106,7 @@ void test_uattributes(Transport transport) {
 }
 
 int main(int argc, char* argv[]) {
-	auto transport = Transport(init_doc);
+	auto transport = Transport();
 
 	test_uuri(transport);
 
