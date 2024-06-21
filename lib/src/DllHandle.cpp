@@ -17,6 +17,7 @@ using namespace std;
 struct DllHandle::Impl {
 	void* dl_handle;
 	std::string path;
+	std::string md5;
 
 	void throw_error(const std::string& desc, const std::string& fpath) {
 		using namespace std;
@@ -55,20 +56,21 @@ struct DllHandle::Impl {
 	Impl(const std::string& path, const WhiteList& white_list = WhiteList())
 	    : path(path), dl_handle(nullptr) {
 		using namespace std;
-		auto hash = compute_md5(path);
+		md5 = compute_md5(path);
 		if (white_list.size() > 0) {
-			if (white_list.count(hash) == 0) {
+			if (white_list.count(md5) == 0) {
 				using namespace std;
 				stringstream ss;
-				ss << "MD5 hash=" << hash << " for  file \"" << path
+				ss << "MD5 hash=" << md5 << " for  file \"" << path
 				   << "\" is not in white list";
 				throw runtime_error(ss.str());
 			}
-		} else {
-			using namespace std;
-			cerr << "MD5 hash=" << hash << " for \"" << path
-			     << "\" was found but whitelist is missing." << endl;
 		}
+		// else {
+		// 	using namespace std;
+		// 	cerr << "MD5 hash=" << hash << " for \"" << path
+		// 	     << "\" was found but whitelist is missing." << endl;
+		// }
 		dl_handle = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL);
 		if (dl_handle == nullptr)
 			throw_error("dlopen", path);
@@ -101,6 +103,14 @@ struct DllHandle::Impl {
 		}
 		return ptr;
 	}
+
+	string getPath() const {
+		return path;
+	}
+
+	string getMD5() const {
+		return md5;
+	}
 };
 
 DllHandle::DllHandle(const std::string& path, const WhiteList& white_list)
@@ -108,4 +118,12 @@ DllHandle::DllHandle(const std::string& path, const WhiteList& white_list)
 
 void* DllHandle::getSymbol(const std::string& symbol) {
 	return pImpl->getSymbol(symbol);
+}
+
+string DllHandle::getPath() const {
+	return pImpl->getPath();
+}
+
+string DllHandle::getMD5() const {
+	return pImpl->getMD5();
 }

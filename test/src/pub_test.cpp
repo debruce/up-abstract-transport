@@ -29,6 +29,7 @@ AnyMap idHelper()
 
 int main(int argc, char* argv[]) {
 	auto transport = Transport();
+	cout << transport.describe().dump(4) << endl;
 	auto p1 = Publisher(transport, "upl/p1", "Zenoh");
 	auto p2 = Publisher(transport, "upl/p2", "Zenoh");
 

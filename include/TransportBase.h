@@ -57,7 +57,7 @@ struct Transport {
 	Transport(const char* init_string = default_transport_doc);
 	Serializer getSerializer(const std::string&);
 	std::any getConcept(const TransportTag& tag, const std::string&);
-	// std::vector<std::string> listConcepts();
+	Doc describe() const;
 };
 
 struct Message {

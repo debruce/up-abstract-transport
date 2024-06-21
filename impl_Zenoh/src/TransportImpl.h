@@ -19,7 +19,7 @@ struct TransportImpl : public UpAbstractTransport::ConceptApi,
 	~TransportImpl();
 
 	std::any getConcept(const std::string&) override;
-	std::vector<std::string> listConcepts() override;
+	UpAbstractTransport::Doc describe() const override;
 
 	static std::shared_ptr<UpAbstractTransport::ConceptApi> getImplementation(
 	    const nlohmann::json& doc);

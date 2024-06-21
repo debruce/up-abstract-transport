@@ -8,7 +8,7 @@
 namespace UpAbstractTransport {
 struct ConceptApi {
 	virtual std::any getConcept(const std::string&) = 0;
-	virtual std::vector<std::string> listConcepts() = 0;
+	virtual Doc describe() const = 0;
 };
 
 struct ConceptFactories {
@@ -18,7 +18,7 @@ struct ConceptFactories {
 
 struct SerializerFactories {
 	std::function<std::shared_ptr<SerializerApi>(const std::string& kind)>
-	    get_instance;
+	    getInstance;
 };
 
 struct TransportPlugin {
@@ -41,6 +41,35 @@ struct HiddenTransport {
 		}
 		return std::dynamic_pointer_cast<T>(it->second.impl);
 	}
+
+	Serializer getSerializer(const std::string& name) {
+		Serializer ret;
+		ret.pImpl = serialPlugin->getInstance(name);
+		return ret;
+	}
+
+	std::any getConcept(const std::string& tagName, const std::string& conceptName) {
+		auto it = transports.find(tagName);
+		if (it == transports.end()) {
+			throw std::runtime_error("Cannot find transport from tag");
+		}
+		return it->second.impl->getConcept(conceptName);
+	}
+
+	Doc describe() const
+	{
+		using namespace std;
+		Doc	ret;
+		ret["serializers"]["path"] = serialPlugin.getPath();
+		ret["serializers"]["MD5"] = serialPlugin.getMD5();
+		for (const auto& [k, v] : transports) {
+			ret[k]["path"] = v.plugin.getPath();
+			ret[k]["MD5"] = v.plugin.getMD5();
+			ret[k]["concepts"] = v.impl->describe();
+		}
+		return ret;
+	}
+
 };
 
 };  // namespace UpAbstractTransport

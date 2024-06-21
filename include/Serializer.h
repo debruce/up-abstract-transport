@@ -33,6 +33,6 @@ public:
 	bool assign(const AnyMap& arg);
 	AnyMap fetch(bool describe = false) const;
 
-	friend class Transport;
+	friend class HiddenTransport;
 };
 };  // namespace UpAbstractTransport

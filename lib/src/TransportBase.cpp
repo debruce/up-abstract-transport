@@ -50,22 +50,15 @@ Transport::Transport(const char* init_string)
     : Transport(Doc::parse(init_string)) {}
 
 Serializer Transport::getSerializer(const string& name) {
-	Serializer ret;
-
-	ret.pImpl = pImpl->serialPlugin->get_instance(name);
-	return ret;
+	return pImpl->getSerializer(name);
 }
 
-any Transport::getConcept(const TransportTag& tag, const string& name) {
-	auto it = pImpl->transports.find(tag.name);
-	if (it == pImpl->transports.end()) {
-		throw runtime_error("Cannot find transport from tag");
-	}
-	return it->second.impl->getConcept(name);
+any Transport::getConcept(const TransportTag& tag, const string& conceptName) {
+	return pImpl->getConcept(tag.name, conceptName);
 }
 
-// vector<string> Transport::listConcepts() {
-// 	return pImpl->conceptImpl->listConcepts();
-// }
+Doc Transport::describe() const {
+	return pImpl->describe();
+}
 
 };  // namespace UpAbstractTransport
