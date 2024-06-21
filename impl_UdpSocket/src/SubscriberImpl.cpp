@@ -45,7 +45,11 @@ struct SubscriberImpl : public SubscriberApi {
 			while ((len = recv(ptr->fd, buffer.data(), buffer.size(), 0)) > 0) {
 				auto msg = new uprotocol::v1::UMessage();
 				msg->ParseFromArray(buffer.data(), len);
-				cout << "'''" << endl << msg->DebugString() << "'''" << endl;
+				UpAbstractTransport::Message message;
+				message.payload = msg->payload();
+				message.attributes = msg->attributes().SerializeAsString();
+				callback("socket_source", listening_topic, message);
+				// cout << "'''" << endl << msg->DebugString() << "'''" << endl;
 				// stringstream ss;
 				// ss << "[ ";
 				// for (auto i = 0; i < len; i++) {

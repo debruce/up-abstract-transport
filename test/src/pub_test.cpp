@@ -28,6 +28,7 @@ AnyMap idHelper() {
 
 int main(int argc, char* argv[]) {
 	auto transport = Transport();
+	cout << transport.describe().dump(4) << endl;
 	// TransportTag tag("Zenoh");
 	TransportTag tag("UdpSocket", { {"ipv4", "0.0.0.0"}, {"port", 4444}}); 
 	auto p1 = Publisher(transport, "upl/p1", tag);

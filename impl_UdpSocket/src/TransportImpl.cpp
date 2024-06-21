@@ -44,9 +44,8 @@ any TransportImpl::getConcept(const std::string& name) {
 	return it->second;
 }
 
-vector<string> TransportImpl::listConcepts() {
-	vector<string> ret;
-	ret.reserve(getters.size());
+UpAbstractTransport::Doc TransportImpl::describe() const {
+	Doc ret;
 	for (const auto& [k, v] : getters)
 		ret.push_back(k);
 	return ret;
