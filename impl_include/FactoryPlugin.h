@@ -25,6 +25,7 @@ public:
 		factory = (FACT*)(*get_factory)();
 	}
 	FACT* operator->() { return factory; }
+	FACT* operator->() const { return factory; }
 	std::string getPath() const { return dll_handle->getPath(); }
 	std::string getMD5() const { return dll_handle->getMD5(); }
 };

@@ -19,6 +19,7 @@ struct ConceptFactories {
 struct SerializerFactories {
 	std::function<std::shared_ptr<SerializerApi>(const std::string& kind)>
 	    getInstance;
+	std::function<Doc()> describe;
 };
 
 struct TransportPlugin {
@@ -37,7 +38,7 @@ struct HiddenTransport {
 		auto it = transports.find(kind);
 		if (it == transports.end()) {
 			throw std::runtime_error(
-			    std::string("getTransportImpl annot find ") + kind);
+			    std::string("getTransportImpl cannot find ") + kind);
 		}
 		return std::dynamic_pointer_cast<T>(it->second.impl);
 	}
@@ -62,10 +63,11 @@ struct HiddenTransport {
 		Doc	ret;
 		ret["serializers"]["path"] = serialPlugin.getPath();
 		ret["serializers"]["MD5"] = serialPlugin.getMD5();
+		ret["serializers"]["types"] = serialPlugin->describe();
 		for (const auto& [k, v] : transports) {
-			ret[k]["path"] = v.plugin.getPath();
-			ret[k]["MD5"] = v.plugin.getMD5();
-			ret[k]["concepts"] = v.impl->describe();
+			ret["transports"][k]["path"] = v.plugin.getPath();
+			ret["transports"][k]["MD5"] = v.plugin.getMD5();
+			ret["transports"][k]["concepts"] = v.impl->describe();
 		}
 		return ret;
 	}
