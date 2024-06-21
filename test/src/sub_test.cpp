@@ -7,19 +7,10 @@
 using namespace std;
 using namespace UpAbstractTransport;
 
-auto init_doc =
-    R"(
-{
-    "serializers": "${IMPL_SERIALIZE}",
-    "Zenoh": "${IMPL_ZENOH}",
-    "UdpSocket": "${IMPL_UDPSOCKET}"
-}
-)";
-
 int main(int argc, char* argv[]) {
-	auto transport = Transport(init_doc);
+	auto transport = Transport();
 	auto callback = [&](const string& sending_topic,
-	                   const string& listening_topic, const Message& message) {
+	                    const string& listening_topic, const Message& message) {
 		auto attributes = transport.getSerializer("UAttributes");
 		attributes.deserialize(message.attributes);
 		cout << "subscriber callback with"

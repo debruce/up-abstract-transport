@@ -57,8 +57,6 @@ any Transport::getConcept(const TransportTag& tag, const string& conceptName) {
 	return pImpl->getConcept(tag.name, conceptName);
 }
 
-Doc Transport::describe() const {
-	return pImpl->describe();
-}
+Doc Transport::describe() const { return pImpl->describe(); }
 
 };  // namespace UpAbstractTransport

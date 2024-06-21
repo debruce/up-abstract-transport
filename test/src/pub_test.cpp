@@ -14,8 +14,7 @@ string genString(const char* fmt, Args... args) {
 	return string(buf);
 }
 
-AnyMap idHelper()
-{
+AnyMap idHelper() {
 	uint64_t timestamp =
 	    std::chrono::duration_cast<std::chrono::milliseconds>(
 	        std::chrono::system_clock::now().time_since_epoch())
@@ -56,7 +55,8 @@ int main(int argc, char* argv[]) {
 
 	for (auto i = 0; i < 5; i++) {
 		cout << endl << "client code pubishing " << i << endl;
-		p1(Message{.payload=genString("attr_A_%d", i), .attributes=uattributes.serialize()});
+		p1(Message{.payload = genString("attr_A_%d", i),
+		           .attributes = uattributes.serialize()});
 		// p2(Message{genString("pay_B_%d", i), genString("attr_B_%d", i)});
 		usleep(100000);
 	}

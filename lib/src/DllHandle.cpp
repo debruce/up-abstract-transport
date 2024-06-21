@@ -104,13 +104,9 @@ struct DllHandle::Impl {
 		return ptr;
 	}
 
-	string getPath() const {
-		return path;
-	}
+	string getPath() const { return path; }
 
-	string getMD5() const {
-		return md5;
-	}
+	string getMD5() const { return md5; }
 };
 
 DllHandle::DllHandle(const std::string& path, const WhiteList& white_list)
@@ -120,10 +116,6 @@ void* DllHandle::getSymbol(const std::string& symbol) {
 	return pImpl->getSymbol(symbol);
 }
 
-string DllHandle::getPath() const {
-	return pImpl->getPath();
-}
+string DllHandle::getPath() const { return pImpl->getPath(); }
 
-string DllHandle::getMD5() const {
-	return pImpl->getMD5();
-}
+string DllHandle::getMD5() const { return pImpl->getMD5(); }

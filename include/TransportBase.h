@@ -35,8 +35,7 @@ struct TransportTag {
 	}
 
 	template <typename T>
-	T get(const std::string& n) const
-	{
+	T get(const std::string& n) const {
 		return std::any_cast<T>(props.at(n));
 	}
 };

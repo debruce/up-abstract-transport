@@ -62,16 +62,13 @@ static shared_ptr<UpAbstractTransport::SerializerApi> getInstance(
 	}
 }
 
-UpAbstractTransport::Doc describe()
-{
-	return Doc{ "UAttributes", "UStatus", "UUri" };
+UpAbstractTransport::Doc describe() {
+	return Doc{"UAttributes", "UStatus", "UUri"};
 }
 
 };  // namespace Impl_UpCoreApi
 
 UpAbstractTransport::SerializerFactories factories = {
-    Impl_UpCoreApi::getInstance,
-    Impl_UpCoreApi::describe
-};
+    Impl_UpCoreApi::getInstance, Impl_UpCoreApi::describe};
 
 FACTORY_EXPOSE(factories);

@@ -49,7 +49,8 @@ struct HiddenTransport {
 		return ret;
 	}
 
-	std::any getConcept(const std::string& tagName, const std::string& conceptName) {
+	std::any getConcept(const std::string& tagName,
+	                    const std::string& conceptName) {
 		auto it = transports.find(tagName);
 		if (it == transports.end()) {
 			throw std::runtime_error("Cannot find transport from tag");
@@ -57,10 +58,9 @@ struct HiddenTransport {
 		return it->second.impl->getConcept(conceptName);
 	}
 
-	Doc describe() const
-	{
+	Doc describe() const {
 		using namespace std;
-		Doc	ret;
+		Doc ret;
 		ret["serializers"]["path"] = serialPlugin.getPath();
 		ret["serializers"]["MD5"] = serialPlugin.getMD5();
 		ret["serializers"]["types"] = serialPlugin->describe();
@@ -71,7 +71,6 @@ struct HiddenTransport {
 		}
 		return ret;
 	}
-
 };
 
 };  // namespace UpAbstractTransport
