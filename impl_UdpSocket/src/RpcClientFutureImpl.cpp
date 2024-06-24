@@ -1,74 +1,88 @@
 #include "HiddenTransport.h"
 #include "TransportImpl.h"
+#include "uprotocol/v1/umessage.pb.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 #include <iostream>
 
 using namespace UpAbstractTransport;
 using namespace std;
 
-// static string keyexpr2string(const z_keyexpr_t& keyexpr) {
-// 	z_owned_str_t keystr = z_keyexpr_to_string(keyexpr);
-// 	string ret(z_loan(keystr));
-// 	z_drop(z_move(keystr));
-// 	return ret;
-// }
-
-// template <typename T>
-// static z_bytes_t make_zbytes(const T& t) {
-// 	return {.len = t.size(), .start = (const uint8_t*)t.data()};
-// }
-
-// static string extract(const z_bytes_t& b) {
-// 	return string((const char*)b.start, b.len);
-// }
-
 struct RpcClientImpl : public RpcClientApi {
 	shared_ptr<TransportImpl> trans_impl;
-	// z_owned_reply_channel_t channel;
+	int socket_fd;
 
 	RpcClientImpl(Transport transport, const string& topic,
 	              const Message& message, const chrono::milliseconds& timeout,
 	              const TransportTag& tag) {
-		trans_impl = transport.pImpl->getTransportImpl<TransportImpl>("UdpSocket");
 		cout << __PRETTY_FUNCTION__ << endl;
-		// z_keyexpr_t keyexpr = z_keyexpr(topic.c_str());
-		// if (!z_check(keyexpr))
-		// 	throw std::runtime_error("Not a valid key expression");
-		// channel = zc_reply_fifo_new(16);
-		// auto opts = z_get_options_default();
-		// auto attrs = z_bytes_map_new();
-		// opts.value.payload = make_zbytes(message.payload);
-		// z_bytes_map_insert_by_alias(&attrs, z_bytes_new("attributes"),
-		//                             make_zbytes(message.attributes));
-		// opts.attachment = z_bytes_map_as_attachment(&attrs);
-		// opts.timeout_ms = timeout.count();
-		// z_get(trans_impl->session.loan(), keyexpr, "", z_move(channel.send),
-		//       &opts);
+
+		const char* ipv4 = tag.get<const char*>("ipv4");
+		short port = tag.get<int>("port");
+
+		socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+		if (socket_fd < 0) {
+			cerr << "socket failed" << endl;
+			exit(-1);
+		}
+
+		struct sockaddr_in addr = { AF_INET, htons(port) };
+		addr.sin_addr.s_addr = inet_addr(ipv4);
+		if (connect(socket_fd, (const sockaddr*)&addr, sizeof(addr)) < 0) {
+			cerr << "connect failed" << endl;
+			exit(-1);
+		}
+		cout << "after connect" << endl;
+		//
+		// Below ugliness to be replaced with protobuf-free merging function
+		//
+		auto attr = new uprotocol::v1::UAttributes();
+		attr->ParseFromString(message.attributes);
+		auto pmsg = new uprotocol::v1::UMessage();
+		pmsg->set_allocated_attributes(attr);
+		pmsg->set_payload(message.payload);
+		auto data = pmsg->SerializeAsString();
+		//
+		// Above ugliness to be replaced with protobuf-free merging function
+		//
+		if (send(socket_fd, data.data(), data.size(), 0) < 0) {
+			cerr << "send failed" << endl;
+			exit(-1);
+		}
+		cout << "after send" << endl;
 	}
 
-	// ~RpcClientImpl() { z_drop(z_move(channel)); }
-	~RpcClientImpl() { }
+	~RpcClientImpl()
+	{
+		if (socket_fd != -1) {
+			close(socket_fd);
+			socket_fd = -1;
+		}
+	}
 
 	RpcReply operator()() override {
-		string src;
+		array<uint8_t, 32768>	buffer;
+		auto len = recv(socket_fd, buffer.data(), buffer.size(), 0);
+		cout << "recv got len=" << len << endl;
+		if (len < 0) {
+			cerr << "recv failed" << endl;
+			exit(-1);
+		}
+		//
+		// Below ugliness to be replaced with protobuf-free splitting function
+		//
+		auto msg = new uprotocol::v1::UMessage();
+		msg->ParseFromArray(buffer.data(), buffer.size());
+		cout << msg->DebugString() << endl;
+		// string src;
 		Message message;
-		// z_owned_reply_t reply = z_reply_null();
-
-		// for (z_call(channel.recv, &reply); z_check(reply);
-		//      z_call(channel.recv, &reply)) {
-		// 	if (z_reply_is_ok(&reply)) {
-		// 		z_sample_t sample = z_reply_ok(&reply);
-		// 		src = keyexpr2string(sample.keyexpr);
-		// 		message.payload = extract(sample.payload);
-		// 		z_bytes_t attr = z_attachment_get(sample.attachment,
-		// 		                                  z_bytes_new("attributes"));
-		// 		message.attributes = extract(attr);
-		// 		break;
-		// 	} else {
-		// 		throw std::runtime_error("Received an error");
-		// 	}
-		// }
-
-		// z_drop(z_move(reply));
+		message.payload = msg->payload();
+		message.attributes = msg->attributes().SerializeAsString();
+		//
+		// Above ugliness to be replaced with protobuf-free splitting function
+		//
 		return message;
 	}
 };

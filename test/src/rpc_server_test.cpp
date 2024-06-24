@@ -10,20 +10,22 @@ using namespace UpAbstractTransport;
 
 int main(int argc, char* argv[]) {
 	auto transport = Transport();
-	auto callback = [](const string& sending_topic,
+	auto callback = [&](const string& sending_topic,
 	                   const string& listening_topic,
 	                   const Message& message) -> RpcReply {
+		auto uattributes = transport.getSerializer("UAttributes");
+		uattributes.deserialize(message.attributes);
 		cout << "rpc callback with"
 		     << " from=" << sending_topic << " to=" << listening_topic
 		     << " payload=" << message.payload
-		     << " attributes=" << message.attributes << endl;
-		string upayload, uattributes;
+		     << " attributes=" << uattributes.debugString() << endl;
+		string upayload;
 		for (auto c : message.payload)
 			upayload += std::toupper(c);
-		for (auto c : message.attributes)
-			uattributes += std::toupper(c);
-		return Message{upayload, uattributes};
+		return Message{.payload=upayload, .attributes=uattributes.serialize()};
 	};
-	auto rpc_server = RpcServer(transport, "demo/rpc/*", callback, "Zenoh");
+	// TransportTag tag("Zenoh");
+	TransportTag tag("UdpSocket", { {"ipv4", "0.0.0.0"}, {"port", 4444}}); 
+	auto rpc_server = RpcServer(transport, "demo/rpc/*", callback, tag);
 	sleep(10000);
 }
