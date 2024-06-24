@@ -7,6 +7,7 @@
 #include <vector>
 #include <variant>
 #include <tuple>
+#include <string_view>
 #include "uprotocol/v1/umessage.pb.h"
 #include "uprotocol/v1/uuid.pb.h"
 
@@ -40,38 +41,34 @@ struct Tagged_t {
 };
 
 
-class VarIntIterator {
+class VarIntUnpackStream {
 public:
-    using iterator_category = std::input_iterator_tag;
-    using value_type = uint8_t;
-    using difference_type = std::ptrdiff_t;
-    using pointer = const uint8_t*;
-    // using reference = uint64_t;
-
-    explicit VarIntIterator(const uint8_t* start, size_t len)
+    explicit VarIntUnpackStream(const uint8_t* start, size_t len)
     {
         initial = current = start;
         end = current + len;
-        atEnd = false;
-        evaluate();
     }
 
-    explicit VarIntIterator(const std::string& s) : VarIntIterator((uint8_t*)(s.data()), s.size())
+    explicit VarIntUnpackStream(const std::string& s) : VarIntUnpackStream((uint8_t*)(s.data()), s.size())
     {
     }
 
-    explicit VarIntIterator(const std::vector<uint8_t>& s) : VarIntIterator(s.data(), s.size())
+    explicit VarIntUnpackStream(const std::vector<uint8_t>& s) : VarIntUnpackStream(s.data(), s.size())
     {
     }
 
-    Expected<uint64_t> operator*() const {
-        if (atEnd) return StrmEnd{};
-        return accum;
-    }
-
-    VarIntIterator& operator++() {
-        evaluate();
-        return *this;
+    Expected<uint64_t> operator()()
+    {
+        uint64_t accum = 0;
+        size_t shift = 0;
+        while (current < end) {
+            auto value = *current;
+            ++current;
+            accum |= uint64_t(value & 0x7f) << shift;
+            shift += 7;
+            if (!(value & 0x80)) return accum;
+        }
+        return StrmEnd{};
     }
 
     Expected<std::vector<uint8_t>> operator()(size_t len)
@@ -80,8 +77,6 @@ public:
         if (current + len > end) return StrmEnd{};
         auto ret = std::vector<uint8_t>(current, current + len);
         current += len;
-        // cout << "jumping current to " << dec << (current - initial) << endl;
-        evaluate();
         return ret;
     }
 
@@ -91,29 +86,9 @@ public:
     }
 
 private:
-    pointer initial;
-    pointer current;
-    pointer end;
-    uint64_t accum;
-    size_t shift;
-    bool atEnd;
-
-    void evaluate()
-    {
-        using namespace std;
-
-        if (atEnd) return;
-        accum = 0;
-        shift = 0;
-        while (current < end) {
-            auto value = *current;
-            ++current;
-            accum |= uint64_t(value & 0x7f) << shift;
-            shift += 7;
-            if (!(value & 0x80)) return;
-        }
-        atEnd = true;
-    }
+    const uint8_t* initial;
+    const uint8_t* current;
+    const uint8_t* end;
 };
 
 template <typename T>
@@ -150,20 +125,18 @@ std::ostream& operator<<(std::ostream& os, const FieldVar& data)
 }
 
 Expected<std::tuple<size_t, FieldVar>>
-    takeField(VarIntIterator& it)
+    takeField(VarIntUnpackStream& it)
 {
     using namespace std;
-    auto vtag = *it;
+    auto vtag = it();
     if (isBad(vtag)) return StrmEnd{};
     auto tag = getGood(vtag);
     size_t fieldNumber = tag >> 3;
     tag &= 7;
     switch (tag) {
         case 0: {
-            ++it;
-            auto value = *it;
+            auto value = it();
             if (isBad(value)) return StrmEnd{};
-            ++it;
             return make_tuple(fieldNumber, VarInt_t(getGood(value)));
         }
         case 1: {
@@ -177,8 +150,7 @@ Expected<std::tuple<size_t, FieldVar>>
             return make_tuple(fieldNumber, packInto<uint32_t>(getGood(value)));
         }
         case 2: {
-            ++it;
-            auto len = *it;
+            auto len = it();
             if (isBad(len)) return StrmEnd{};
             auto value = it(getGood(len));
             if (isBad(value)) return StrmEnd{};
@@ -210,7 +182,8 @@ int main(int argc, char *argv[])
     auto x = msg->SerializeAsString();
     // for (auto i = 0; i < x.size(); i++) cout << dec << i << ": " << hex << int(x[i]) << endl;
 
-    auto it = VarIntIterator(x);
+    auto it = VarIntUnpackStream(x);
+
     auto attrPair = takeField(it);
     if (isBad(attrPair)) {
         cout << "cannot get first field" << endl;
@@ -222,4 +195,13 @@ int main(int argc, char *argv[])
     attrDeser->ParseFromArray(realData.data(), realData.size());
     cout << "first field=" << attrField << endl;
     cout << attrDeser->DebugString();
+
+    auto attrPair2 = takeField(it);
+    if (isBad(attrPair2)) {
+        cout << "cannot get second field" << endl;
+        exit(-1);
+    }
+    auto [attrField2, attrData2] = getGood(attrPair2);
+    auto realPayload = get<vector<uint8_t>>(attrData2);
+    cout << "second field=" << attrField << ' ' << string_view((const char*)(realPayload.data()), realPayload.size()) << endl;
 }
