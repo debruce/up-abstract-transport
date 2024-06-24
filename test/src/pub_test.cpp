@@ -29,8 +29,10 @@ AnyMap idHelper() {
 int main(int argc, char* argv[]) {
 	auto transport = Transport();
 	cout << transport.describe().dump(4) << endl;
-	auto p1 = Publisher(transport, "upl/p1", "Zenoh");
-	auto p2 = Publisher(transport, "upl/p2", "Zenoh");
+	// TransportTag tag("Zenoh");
+	TransportTag tag("UdpSocket", { {"ipv4", "0.0.0.0"}, {"port", 4444}}); 
+	auto p1 = Publisher(transport, "upl/p1", tag);
+	auto p2 = Publisher(transport, "upl/p2", tag);
 
 	auto uattributes = transport.getSerializer("UAttributes");
 	AnyMap am{{"commstatus", "DEADLINE_EXCEEDED"},

@@ -18,6 +18,8 @@ int main(int argc, char* argv[]) {
 		     << " payload=" << message.payload
 		     << " attributes=" << attributes.debugString() << endl;
 	};
-	auto subscriber = Subscriber(transport, "upl/*", callback, "Zenoh");
+	// TransportTag tag("Zenoh");
+	TransportTag tag("UdpSocket", { {"ipv4", "0.0.0.0"}, {"port", 4444}}); 
+	auto subscriber = Subscriber(transport, "upl/*", callback, tag);
 	sleep(10000);
 }
