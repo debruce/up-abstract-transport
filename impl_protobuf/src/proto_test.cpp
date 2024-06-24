@@ -7,9 +7,8 @@
 #include <vector>
 #include <variant>
 #include <tuple>
-// #include <boost/core/demangle.hpp>
-// #include <nlohmann/json.hpp>
-#include "addressbook.pb.h"
+#include "uprotocol/v1/umessage.pb.h"
+#include "uprotocol/v1/uuid.pb.h"
 
 struct StrmEnd {};
 
@@ -195,50 +194,32 @@ int main(int argc, char *argv[])
 {
     using namespace std;
 
-    auto attr = new tutorial::Attributes();
-    attr->set_name("name");
-    attr->set_id(1000000);
-    attr->set_email("email");
+    auto id = new uprotocol::v1::UUID();
+    id->set_msb(2);
+    id->set_lsb(3);
+    auto attr = new uprotocol::v1::UAttributes();
+    attr->set_token("hello_token");
+    attr->set_traceparent("hello_traceparent");
+    attr->set_allocated_id(id);
 
-    auto msg = new tutorial::Message();
+    auto msg = new uprotocol::v1::UMessage();
     msg->set_allocated_attributes(attr);
-    msg->set_payload("data");
+    msg->set_payload("hello_payload");
 
     cout << msg->DebugString() << endl;
     auto x = msg->SerializeAsString();
     // for (auto i = 0; i < x.size(); i++) cout << dec << i << ": " << hex << int(x[i]) << endl;
 
     auto it = VarIntIterator(x);
-
-    {
-        auto v = takeField(it);
-        if (isBad(v)) {
-            cout << "failed to get field" << endl;
-            exit(-1);
-        }
-        auto [ fieldNumber, data] = getGood(v);
-        if (holds_alternative<vector<uint8_t>>(data)) {
-            cout << fieldNumber << ": " << data << endl;
-            auto data2 = get<vector<uint8_t>>(data);
-            auto it2 = VarIntIterator(data2);
-            while (true) {
-                auto v2 = takeField(it2);
-                if (isBad(v2)) break;
-                auto [ fieldNumber3, data3] = getGood(v2);
-                cout << fieldNumber3 << ": " << data3 << endl;
-            }
-        }
-        else {
-            cout << fieldNumber << ": " << data << endl;
-        }
+    auto attrPair = takeField(it);
+    if (isBad(attrPair)) {
+        cout << "cannot get first field" << endl;
+        exit(-1);
     }
-    {
-        auto v = takeField(it);
-        if (isBad(v)) {
-            cout << "failed to get field" << endl;
-            exit(-1);
-        }
-        auto [ fieldNumber, data] = getGood(v);
-        cout << fieldNumber << ": " << data << endl;
-    }
+    auto [attrField, attrData] = getGood(attrPair);
+    auto attrDeser = new uprotocol::v1::UAttributes();
+    auto realData = get<vector<uint8_t>>(attrData);
+    attrDeser->ParseFromArray(realData.data(), realData.size());
+    cout << "first field=" << attrField << endl;
+    cout << attrDeser->DebugString();
 }
