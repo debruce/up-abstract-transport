@@ -101,8 +101,10 @@ public:
 
     void operator()(uint64_t data)
     {
+        using namespace std;
         while (data > 127) {
-            buffer.push_back(uint8_t((data & 0x7f) | 0x80));
+            auto x = uint8_t((data & 0x7f) | 0x80);
+            buffer.push_back(x);
             data >>= 7;
         }
         buffer.push_back(uint8_t(data));
@@ -110,22 +112,8 @@ public:
 
     void operator()(const uint8_t* data, size_t len)
     {
-        std::copy(data, data+len, buffer.begin());
-    }
-
-    void operator()(const char* data)
-    {
-        this->operator()(reinterpret_cast<const uint8_t*>(data), strlen(data));
-    }
-
-    void operator()(const std::string& data)
-    {
-        this->operator()(reinterpret_cast<const uint8_t*>(data.data()), data.size());
-    }
-
-    void operator()(const std::vector<uint8_t>& data)
-    {
-        this->operator()(data.data(), data.size());
+        using namespace std;
+        for (auto i = 0; i < len; i++) buffer.push_back(data[i]);
     }
 
     const uint8_t* data() const { return buffer.data(); }
@@ -213,10 +201,34 @@ void putField(VarIntPackStream& stream, size_t fieldNumber, const uint8_t* data,
     stream(data, len);
 }
 
+void putField(VarIntPackStream& stream, size_t fieldNumber, const std::string& data)
+{
+    putField(stream, fieldNumber, (const uint8_t*)data.data(), data.size());
+}
+
+void putField(VarIntPackStream& stream, size_t fieldNumber, const char* data)
+{
+    putField(stream, fieldNumber, (const uint8_t*)data, strlen(data)-1);
+}
+
 void putField(VarIntPackStream& stream, size_t fieldNumber, const VarInt_t& data)
 {
     stream(uint64_t((fieldNumber << 3) | 0));
-    stream(data);
+    stream(data.data);
+}
+
+void putField(VarIntPackStream& stream, size_t fieldNumber, const uint32_t& data)
+{
+    stream(uint64_t((fieldNumber << 3) | 5));
+    stream(sizeof(data));
+    stream((uint8_t*)&data, sizeof(data));
+}
+
+void putField(VarIntPackStream& stream, size_t fieldNumber, const uint64_t& data)
+{
+    stream(uint64_t((fieldNumber << 3) | 1));
+    stream(sizeof(data));
+    stream((uint8_t*)&data, sizeof(data));
 }
 
 int main(int argc, char *argv[])
@@ -239,12 +251,22 @@ int main(int argc, char *argv[])
     // auto x = msg->SerializeAsString();
     // // for (auto i = 0; i < x.size(); i++) cout << dec << i << ": " << hex << int(x[i]) << endl;
 
+    string payload;
+    for (auto i = 0; i < 10; i++) {
+        for (auto j = 0; j < 26; j++) {
+            payload += char('a'+j);
+        }
+        payload += '\n';
+    }
     VarIntPackStream outStream;
-    // putField(outStream, 1, attr->SerializeAsString());
-    // putField(outStream, 2, "hello_payload");
+    putField(outStream, 1, attr->SerializeAsString());
+    putField(outStream, 2, payload);
 
-    // auto msg = new uprotocol::v1::UMessage();
-    // msg->ParseFromArray(outStream.data(), outStream.size());
+    auto msg = new uprotocol::v1::UMessage();
+    msg->ParseFromArray(outStream.data(), outStream.size());
+    cout << "debug string #############" << endl;
+    cout << msg->DebugString() << endl;
+    cout << msg->payload() << endl;
 #if 0
     auto it = VarIntUnpackStream(x);
 
