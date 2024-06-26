@@ -1,26 +1,14 @@
 #include <iostream>
 #include <sstream>
-#include <functional>
-#include <optional>
-#include <algorithm>
-#include <iterator>
 #include <vector>
-#include <variant>
 #include <tuple>
 #include <string_view>
+#include <type_traits>
+#include <utility>
+#include "Expected.h"
 #include "uprotocol/v1/umessage.pb.h"
 #include "uprotocol/v1/uuid.pb.h"
 
-struct StrmEnd {};
-
-template <typename T>
-using Expected = std::variant<StrmEnd, T>;
-
-template <typename T>
-bool isBad(T&& t) { return std::holds_alternative<StrmEnd>(t); }
-
-template <typename T>
-auto getGood(T&& t) { return std::get<1>(t); }
 
 std::ostream& operator<<(std::ostream& os, const std::vector<uint8_t>& data)
 {
@@ -31,15 +19,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<uint8_t>& data)
     os << ']';
     return os;
 }
-
-template <typename T>
-struct Tagged_t {
-    T  data;
-
-    Tagged_t(T&& t) : data(t) {}
-    operator T& () { return data; }
-};
-
 
 class VarIntUnpackStream {
 public:
@@ -68,13 +47,13 @@ public:
             shift += 7;
             if (!(value & 0x80)) return accum;
         }
-        return StrmEnd{};
+        return ErrorTag{};
     }
 
     Expected<std::vector<uint8_t>> operator()(size_t len)
     {
         using namespace std;
-        if (current + len > end) return StrmEnd{};
+        if (current + len > end) return ErrorTag{};
         auto ret = std::vector<uint8_t>(current, current + len);
         current += len;
         return ret;
@@ -122,7 +101,6 @@ private:
     std::vector<uint8_t>    buffer;
 };
 
-
 template <typename T>
 T packInto(const std::vector<uint8_t>& data)
 {
@@ -143,7 +121,7 @@ std::ostream& operator<<(std::ostream& os, const FieldVar& data)
 {
     using namespace std;
     if (holds_alternative<VarInt_t>(data)) {
-        size_t s = get<VarInt_t>(data).data;
+        size_t s = get<VarInt_t>(data);
         os << "size_t(" << s << ')';
     }
     else if (holds_alternative<uint32_t>(data))
@@ -161,36 +139,35 @@ Expected<std::tuple<size_t, FieldVar>>
 {
     using namespace std;
     auto vtag = stream();
-    if (isBad(vtag)) return StrmEnd{};
-    auto tag = getGood(vtag);
+    if (!vtag) return ErrorTag{"getField cannot fetch tag"};
+    auto tag = *vtag;
     size_t fieldNumber = tag >> 3;
     tag &= 7;
     switch (tag) {
         case 0: {
             auto value = stream();
-            if (isBad(value)) return StrmEnd{};
-            return make_tuple(fieldNumber, VarInt_t(getGood(value)));
+            if (!value) return ErrorTag{"getField cannot fetch varint"};
+            return make_tuple(fieldNumber, VarInt_t(*value));
         }
         case 1: {
             auto value = stream(sizeof(uint64_t));
-            if (isBad(value)) return StrmEnd{};
-            return make_tuple(fieldNumber, packInto<uint64_t>(getGood(value)));
+            if (!value) return ErrorTag{"getField cannot fetch uint64_t"};
+            return make_tuple(fieldNumber, packInto<uint64_t>(*value));
         }
         case 5: {
             auto value = stream(sizeof(uint32_t));
-            if (isBad(value)) return StrmEnd{};
-            return make_tuple(fieldNumber, packInto<uint32_t>(getGood(value)));
+            if (!value) return ErrorTag{"getField cannot fetch uint32_t"};
+            return make_tuple(fieldNumber, packInto<uint32_t>(*value));
         }
         case 2: {
             auto len = stream();
-            if (isBad(len)) return StrmEnd{};
-            auto value = stream(getGood(len));
-            if (isBad(value)) return StrmEnd{};
-            return make_tuple(fieldNumber, getGood(value));
+            if (!len) return ErrorTag{"getField cannot fetch length for array"};
+            auto value = stream(*len);
+            if (!value) return ErrorTag{"getField cannot fetch array bytes"};
+            return make_tuple(fieldNumber, *value);
         }
         default:
-            cout << "tag incorrect" << endl;
-            return StrmEnd{};
+            return ErrorTag{"getField got invalid tag"};
     }
 }
 
@@ -214,7 +191,7 @@ void putField(VarIntPackStream& stream, size_t fieldNumber, const char* data)
 void putField(VarIntPackStream& stream, size_t fieldNumber, const VarInt_t& data)
 {
     stream(uint64_t((fieldNumber << 3) | 0));
-    stream(data.data);
+    stream(data);
 }
 
 void putField(VarIntPackStream& stream, size_t fieldNumber, const uint32_t& data)
@@ -231,9 +208,40 @@ void putField(VarIntPackStream& stream, size_t fieldNumber, const uint64_t& data
     stream((uint8_t*)&data, sizeof(data));
 }
 
+using MsgDef = std::tuple<
+    std::pair<std::integral_constant<size_t, 1>, std::vector<uint8_t>>,
+    std::pair<std::integral_constant<size_t, 2>, std::vector<uint8_t>>
+>;
+
+template <typename Tuple>
+struct SecondElementsTuple;
+
+template <>
+struct SecondElementsTuple<std::tuple<>> {
+    using type = std::tuple<>;  // Resulting tuple is empty
+};
+
+template <typename First, typename Second, typename... Rest>
+struct SecondElementsTuple<std::tuple<std::pair<First, Second>, Rest...>> {
+    // Recursively call SecondElementsTuple for the remaining tuple elements
+    using type = decltype(std::tuple_cat(
+        std::tuple<Second>(),   // Include the second element of the current pair
+        typename SecondElementsTuple<std::tuple<Rest...>>::type()  // Recursively process the rest
+    ));
+};
+
+template <typename Tuple>
+using SecondElementsTuple_t = typename SecondElementsTuple<Tuple>::type;
+
+using Filtered = SecondElementsTuple_t<MsgDef>;
+
+
 int main(int argc, char *argv[])
 {
     using namespace std;
+
+    cout << "MsgDef = " << typeid(MsgDef).name() << endl;
+    cout << "Filtered = " << typeid(Filtered).name() << endl;
 
     auto id = new uprotocol::v1::UUID();
     id->set_msb(2);
@@ -243,14 +251,15 @@ int main(int argc, char *argv[])
     attr->set_traceparent("hello_traceparent");
     attr->set_allocated_id(id);
 
-    // auto msg = new uprotocol::v1::UMessage();
-    // msg->set_allocated_attributes(attr);
-    // msg->set_payload("hello_payload");
+    auto msg = new uprotocol::v1::UMessage();
+    msg->set_allocated_attributes(attr);
+    msg->set_payload("hello_payload");
 
-    // cout << msg->DebugString() << endl;
-    // auto x = msg->SerializeAsString();
+    cout << msg->DebugString() << endl;
+    auto x = msg->SerializeAsString();
     // // for (auto i = 0; i < x.size(); i++) cout << dec << i << ": " << hex << int(x[i]) << endl;
 
+#if 0
     string payload;
     for (auto i = 0; i < 10; i++) {
         for (auto j = 0; j < 26; j++) {
@@ -267,15 +276,17 @@ int main(int argc, char *argv[])
     cout << "debug string #############" << endl;
     cout << msg->DebugString() << endl;
     cout << msg->payload() << endl;
-#if 0
+#endif
+
+#if 1
     auto it = VarIntUnpackStream(x);
 
     auto attrPair = getField(it);
-    if (isBad(attrPair)) {
+    if (!attrPair) {
         cout << "cannot get first field" << endl;
         exit(-1);
     }
-    auto [attrField, attrData] = getGood(attrPair);
+    auto [attrField, attrData] = *attrPair;
     auto attrDeser = new uprotocol::v1::UAttributes();
     auto realData = get<vector<uint8_t>>(attrData);
     attrDeser->ParseFromArray(realData.data(), realData.size());
@@ -283,12 +294,14 @@ int main(int argc, char *argv[])
     cout << attrDeser->DebugString();
 
     auto attrPair2 = getField(it);
-    if (isBad(attrPair2)) {
+    cout << "attrPair2 = " << bool(attrPair2) << endl;
+    if (!attrPair2) {
         cout << "cannot get second field" << endl;
         exit(-1);
     }
-    auto [attrField2, attrData2] = getGood(attrPair2);
+    auto [attrField2, attrData2] = *attrPair2;
     auto realPayload = get<vector<uint8_t>>(attrData2);
     cout << "second field=" << attrField << ' ' << string_view((const char*)(realPayload.data()), realPayload.size()) << endl;
+
 #endif
 }
